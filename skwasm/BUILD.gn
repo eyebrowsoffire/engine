@@ -1,0 +1,11 @@
+import("//build/toolchain/wasm.gni")
+
+wasm_lib("skwasm") {
+  sources = [
+    "skwasm_exports.cpp",
+  ]
+
+  deps = [
+      "//third_party/skia",
+  ]
+}
