@@ -150,6 +150,8 @@ def to_gn_args(args):
     gn_args['skia_use_wuffs'] = True
     gn_args['skia_use_expat'] = args.target_os == 'android'
     gn_args['skia_use_fontconfig'] = args.enable_fontconfig
+    if args.target_os == 'wasm':
+      gn_args['skia_enable_fontmgr_custom_embedded'] = False
 
     if args.enable_skshaper:
       gn_args['skia_use_icu'] = True

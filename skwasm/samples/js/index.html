@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test Skwasm</title>
+    </head>
+    <body>
+        <style>
+            canvas {
+                position: absolute;
+                width: 400;
+                height: 400;
+            }
+        </style>    
+        <canvas id="test-canvas" width=400 height=400></canvas>
+        <script>
+            const script = document.createElement('script');
+            script.src = "skwasm.js";
+            document.body.appendChild(script);
+
+            document.onreadystatechange = () => {
+                if (document.readyState === "complete") {
+                    skwasm().then((m) => {
+                        const createSurfaceFromCanvas = m.cwrap("createSurfaceFromCanvas", 
+                            "number", 
+                            ["string", "number", "number"]);
+                        const destroySurface = m.cwrap("destroySurface",
+                            null,
+                            ["number"]);
+                        const getCanvas = m.cwrap("surface_getCanvas",
+                            "number",
+                            ["number"]);
+                        const releaseCanvas = m.cwrap("canvas_release",
+                            null,
+                            ["number"]);
+                        const drawCircle = m.cwrap("canvas_drawCircle",
+                            "number",
+                            ["number", "number", "number", "number"]);
+
+                        const surface = createSurfaceFromCanvas("#test-canvas", 400, 400);
+                        console.log(`SURFACE: ${surface}`);
+
+                        const canvas = getCanvas(surface);
+                        console.log(`CANVAS: ${canvas}`);
+                        drawCircle(canvas, 150, 250, 75);
+
+                        //releaseCanvas(canvas);
+                        //destroySurface(surface);
+                    });
+                }
+            }
+        </script>
+    </body>
+</html>
