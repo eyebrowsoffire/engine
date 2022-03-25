@@ -1,20 +1,18 @@
 import("//build/toolchain/wasm.gni")
 
 wasm_lib("skwasm") {
-  sources = [
-    "skwasm_exports.cpp",
-  ]
+  sources = [ "skwasm_exports.cpp" ]
 
   ldflags = [
     "-lGL",
     "-sLLD_REPORT_UNDEFINED",
     "-sUSE_WEBGL2=1",
     "-sMAX_WEBGL_VERSION=2",
-    "-sEXPORTED_RUNTIME_METHODS=[\"cwrap\"]"
+    "-sEXPORTED_RUNTIME_METHODS=[\"cwrap\"]",
   ]
 
   deps = [
-      "//third_party/skia",
-      "samples/dart:swkasm_dart_test"
+    "//third_party/skia",
+    #"samples/dart:swkasm_dart_test"
   ]
 }
