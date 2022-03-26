@@ -26,6 +26,9 @@
                         const destroySurface = m.cwrap("destroySurface",
                             null,
                             ["number"]);
+                        const flushSurface = m.cwrap("surface_flush", 
+                            null, 
+                            ["number"]);
                         const getCanvas = m.cwrap("surface_getCanvas",
                             "number",
                             ["number"]);
@@ -42,9 +45,10 @@
                         const canvas = getCanvas(surface);
                         console.log(`CANVAS: ${canvas}`);
                         drawCircle(canvas, 150, 250, 75);
+                        flushSurface(surface);
 
-                        //releaseCanvas(canvas);
-                        //destroySurface(surface);
+                        releaseCanvas(canvas);
+                        destroySurface(surface);
                     });
                 }
             }

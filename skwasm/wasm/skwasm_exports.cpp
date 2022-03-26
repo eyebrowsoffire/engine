@@ -4,6 +4,7 @@
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
+#include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <emscripten.h>
 #include <emscripten/html5_webgl.h>
@@ -103,6 +104,7 @@ extern "C" EMSCRIPTEN_KEEPALIVE CanvasWrapper* surface_getCanvas(
 }
 
 extern "C" EMSCRIPTEN_KEEPALIVE void surface_flush(SurfaceWrapper* wrapper) {
+  makeCurrent(wrapper->context);
   wrapper->surface->flush();
 
   printf("Flushed surface!\n");
