@@ -1,4 +1,4 @@
-copy("_js_server") {
+copy("_copy_js_server") {
   sources = [
     "$root_out_dir/skwasm.js",
     "$root_out_dir/skwasm.wasm",
@@ -8,6 +8,6 @@ copy("_js_server") {
   deps = [ "//flutter/skwasm/wasm:skwasm" ]
 }
 
-group("copy_js_sample") {
-  deps = [ ":_js_server" ]
+group("skwasm_js_sample") {
+  deps = [ ":_copy_js_server" ]
 }

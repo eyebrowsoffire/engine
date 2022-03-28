@@ -4,15 +4,38 @@ template("_dart2wasm") {
   prebuilt_dart_action(target_name) {
     forward_variables_from(invoker, "*")
 
+    inputs = [ dart_source ]
+    outputs = [ wasm_out ]
     script = "//third_party/dart/pkg/dart2wasm/bin/dart2wasm.dart"
 
-    args = []
+    args = [
+      rebase_path(dart_source),
+      wasm_out,
+    ]
 
     pool = "//flutter/build/dart:dart_pool"
   }
 }
 
-_dart2wasm("skwasm_dart_test") {
-  inputs = [ "skwasm_dart_test.dart" ]
-  outputs = [ "$root_out_dir/skasm_dart_test.wasm" ]
+_dart2wasm("_skwasm_dart_test_wasm") {
+  dart_source = "skwasm_dart_test.dart"
+  wasm_out = "$root_out_dir/skwasm_dart_test.wasm"
+}
+
+copy("_skwasm_dart_test_server") {
+  sources = [
+    "$root_out_dir/skwasm.js",
+    "$root_out_dir/skwasm.wasm",
+    "$root_out_dir/skwasm_dart_test.wasm",
+    "index.html",
+  ]
+  outputs = [ "$target_out_dir/{{source_file_part}}" ]
+  public_deps = [
+    ":_skwasm_dart_test_wasm",
+    "//flutter/skwasm/wasm:skwasm",
+  ]
+}
+
+group("skwasm_dart_test") {
+  public_deps = [ ":_skwasm_dart_test_server" ]
 }
