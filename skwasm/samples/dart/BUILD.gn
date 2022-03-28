@@ -10,7 +10,7 @@ template("_dart2wasm") {
 
     args = [
       rebase_path(dart_source),
-      wasm_out,
+      rebase_path(wasm_out),
     ]
 
     pool = "//flutter/build/dart:dart_pool"
