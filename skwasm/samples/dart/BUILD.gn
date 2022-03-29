@@ -1,10 +1,11 @@
+import("//flutter/skwasm/pkg/skwasm/skwasm_dart_sources.gni")
 import("//third_party/dart/build/dart/dart_action.gni")
 
 template("_dart2wasm") {
   prebuilt_dart_action(target_name) {
     forward_variables_from(invoker, "*")
 
-    inputs = [ dart_source ]
+    inputs = [ dart_source ] + skwasm_dart_sources
     outputs = [ wasm_out ]
     script = "//third_party/dart/pkg/dart2wasm/bin/dart2wasm.dart"
 

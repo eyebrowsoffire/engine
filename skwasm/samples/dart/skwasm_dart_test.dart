@@ -1,10 +1,11 @@
 import 'dart:math';
 import '../../pkg/skwasm/lib/skwasm.dart';
+
 void main() {
   final Surface surface = Surface('#test-canvas');
   final Canvas canvas = surface.getCanvas();
   final Random random = Random();
-  for(int i = 0; i < 30; i++) {
+  for(int i = 0; i < 40; i++) {
     final double x = random.nextDouble() * 400;
     final double y = random.nextDouble() * 400;
     final double radius = random.nextDouble() * 45.0 + 5.0;

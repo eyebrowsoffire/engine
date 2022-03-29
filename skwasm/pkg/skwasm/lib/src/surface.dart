@@ -6,7 +6,7 @@ import './canvas.dart';
 import './raw_imports.dart';
 
 class Surface {
-  final WasmI32 handle;
+  final SurfaceHandle handle;
 
   factory Surface(String canvasQuerySelector) {
     final utf8Encoder = utf8.encoder;
@@ -16,7 +16,7 @@ class Surface {
       pointer[i] = encoded[i];
     }
     pointer[encoded.length] = 0;
-    final WasmI32 surface =
+    final SurfaceHandle surface =
         createSurfaceFromCanvas(pointer, 400.toWasmI32(), 400.toWasmI32());
     return Surface.constructor(surface);
   }

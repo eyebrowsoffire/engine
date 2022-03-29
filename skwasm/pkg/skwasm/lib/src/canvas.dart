@@ -2,7 +2,7 @@ import 'dart:wasm';
 import './raw_imports.dart';
 
 class Canvas {
-  WasmI32 handle;
+  CanvasHandle handle;
 
   Canvas(this.handle);
 
