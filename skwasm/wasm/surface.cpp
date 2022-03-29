@@ -1,29 +1,14 @@
-#include "third_party/skia/include/core/SkCanvas.h"
-#include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/gl/GrGLInterface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
-
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
 #include <emscripten.h>
 #include <emscripten/html5_webgl.h>
 #include <webgl/webgl1.h>
+#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/gl/GrGLInterface.h"
+#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "wrappers.h"
 
-namespace {
-void makeCurrent(EMSCRIPTEN_WEBGL_CONTEXT_HANDLE handle) {
-  int result = emscripten_webgl_make_context_current(handle);
-  if (result != EMSCRIPTEN_RESULT_SUCCESS) {
-    printf("make_context failed: %d", result);
-  }
-}
-}  // namespace
-
-struct SurfaceWrapper {
-  EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context;
-  sk_sp<GrDirectContext> grContext;
-  sk_sp<SkSurface> surface;
-};
+using namespace Skwasm;
 
 extern "C" EMSCRIPTEN_KEEPALIVE SurfaceWrapper*
 createSurfaceFromCanvas(const char* canvasID, int width, int height) {
@@ -76,13 +61,10 @@ createSurfaceFromCanvas(const char* canvasID, int width, int height) {
   GrGLint stencil;
   emscripten_glGetIntegerv(GL_STENCIL_BITS, &stencil);
 
-  printf("width: %d, height %d, sampleCnt %d, stencil %d\n", width, height,
-         sampleCnt, stencil);
   GrBackendRenderTarget target(width, height, sampleCnt, stencil, info);
   sk_sp<SkSurface> surface(SkSurface::MakeFromBackendRenderTarget(
       grContext.get(), target, kBottomLeft_GrSurfaceOrigin,
       kRGBA_8888_SkColorType, SkColorSpace::MakeSRGB(), nullptr));
-  printf("C SURFACE ON CREATIONL %p\n", surface.get());
   return new SurfaceWrapper{context, grContext, surface};
 }
 
@@ -90,15 +72,8 @@ extern "C" EMSCRIPTEN_KEEPALIVE void destroySurface(SurfaceWrapper* wrapper) {
   delete wrapper;
 }
 
-struct CanvasWrapper {
-  EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context;
-  SkCanvas* canvas;
-};
-
 extern "C" EMSCRIPTEN_KEEPALIVE CanvasWrapper* surface_getCanvas(
     SurfaceWrapper* wrapper) {
-  printf("C SURFACE: %p\n", wrapper->surface.get());
-  printf("C CANVAS: %p\n", wrapper->surface->getCanvas());
   makeCurrent(wrapper->context);
   return new CanvasWrapper{wrapper->context, wrapper->surface->getCanvas()};
 }
@@ -106,30 +81,4 @@ extern "C" EMSCRIPTEN_KEEPALIVE CanvasWrapper* surface_getCanvas(
 extern "C" EMSCRIPTEN_KEEPALIVE void surface_flush(SurfaceWrapper* wrapper) {
   makeCurrent(wrapper->context);
   wrapper->surface->flush();
-
-  printf("Flushed surface!\n");
-}
-
-extern "C" EMSCRIPTEN_KEEPALIVE void canvas_release(CanvasWrapper* wrapper) {
-  delete wrapper;
-}
-
-extern "C" EMSCRIPTEN_KEEPALIVE void canvas_drawCircle(CanvasWrapper* wrapper,
-                                                       float x,
-                                                       float y,
-                                                       float radius) {
-  makeCurrent(wrapper->context);
-
-  printf("DRAWING CIRCLE: canvas: %p x: %f y: %f radius: %f\n", wrapper->canvas,
-         x, y, radius);
-
-  SkPaint p;
-  p.setColor(SK_ColorRED);
-  p.setAntiAlias(true);
-  p.setStyle(SkPaint::kFill_Style);
-  p.setStrokeWidth(10);
-
-  wrapper->canvas->drawCircle(x, y, radius, p);
-
-  printf("Drew the circle!\n");
 }

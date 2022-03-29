@@ -1,7 +1,11 @@
 import("//build/toolchain/wasm.gni")
 
 wasm_lib("skwasm") {
-  sources = [ "skwasm_exports.cpp" ]
+  sources = [
+    "canvas.cpp",
+    "surface.cpp",
+    "wrappers.h",
+  ]
 
   ldflags = [
     "-lGL",
