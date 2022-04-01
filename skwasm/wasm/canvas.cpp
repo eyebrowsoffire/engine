@@ -1,13 +1,14 @@
 #include <emscripten.h>
+#include "export.h"
 #include "wrappers.h"
 
 using namespace Skwasm;
 
-extern "C" EMSCRIPTEN_KEEPALIVE void canvas_release(CanvasWrapper* wrapper) {
+SKWASM_EXPORT void canvas_release(CanvasWrapper* wrapper) {
   delete wrapper;
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void canvas_drawCircle(CanvasWrapper* wrapper,
+SKWASM_EXPORT void canvas_drawCircle(CanvasWrapper* wrapper,
                                                        float x,
                                                        float y,
                                                        float radius) {

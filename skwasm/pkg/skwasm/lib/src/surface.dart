@@ -3,22 +3,18 @@ import 'dart:ffi';
 import 'dart:wasm';
 
 import './canvas.dart';
-import './raw_imports.dart';
+import './raw/raw_memory.dart';
+import './raw/raw_surface.dart';
 
 class Surface {
   final SurfaceHandle handle;
 
   factory Surface(String canvasQuerySelector, int width, int height) {
-    final utf8Encoder = utf8.encoder;
-    final encoded = utf8Encoder.convert(canvasQuerySelector);
-    final pointer = stackAlloc((encoded.length + 1).toWasmI32());
-    for (int i = 0; i < encoded.length; i++) {
-      pointer[i] = encoded[i];
-    }
-    pointer[encoded.length] = 0;
-    final SurfaceHandle surface =
-        createSurfaceFromCanvas(pointer, width.toWasmI32(), height.toWasmI32());
-    return Surface.constructor(surface);
+    final SurfaceHandle surfaceHandle = withStackScope((scope) {
+      final pointer = scope.convertString(canvasQuerySelector);
+      return createSurfaceFromCanvas(pointer, width.toWasmI32(), height.toWasmI32());
+    });
+    return Surface.constructor(surfaceHandle);
   }
 
   Surface.constructor(this.handle);

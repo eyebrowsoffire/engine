@@ -1,5 +1,5 @@
 import 'dart:wasm';
-import './raw_imports.dart';
+import 'raw/raw_canvas.dart';
 
 class Canvas {
   CanvasHandle handle;

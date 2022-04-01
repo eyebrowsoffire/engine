@@ -6,11 +6,12 @@
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
+#include "export.h"
 #include "wrappers.h"
 
 using namespace Skwasm;
 
-extern "C" EMSCRIPTEN_KEEPALIVE SurfaceWrapper*
+SKWASM_EXPORT SurfaceWrapper*
 createSurfaceFromCanvas(const char* canvasID, int width, int height) {
   EmscriptenWebGLContextAttributes attributes;
   emscripten_webgl_init_context_attributes(&attributes);
@@ -68,17 +69,17 @@ createSurfaceFromCanvas(const char* canvasID, int width, int height) {
   return new SurfaceWrapper{context, grContext, surface};
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void destroySurface(SurfaceWrapper* wrapper) {
+SKWASM_EXPORT void destroySurface(SurfaceWrapper* wrapper) {
   delete wrapper;
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE CanvasWrapper* surface_getCanvas(
+SKWASM_EXPORT CanvasWrapper* surface_getCanvas(
     SurfaceWrapper* wrapper) {
   makeCurrent(wrapper->context);
   return new CanvasWrapper{wrapper->context, wrapper->surface->getCanvas()};
 }
 
-extern "C" EMSCRIPTEN_KEEPALIVE void surface_flush(SurfaceWrapper* wrapper) {
+SKWASM_EXPORT void surface_flush(SurfaceWrapper* wrapper) {
   makeCurrent(wrapper->context);
   wrapper->surface->flush();
 }
