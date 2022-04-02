@@ -29,6 +29,7 @@ copy("_skwasm_dart_test_server") {
     "$root_out_dir/skwasm.wasm",
     "$root_out_dir/skwasm_dart_test.wasm",
     "index.html",
+    "dart_imports.js",
   ]
   outputs = [ "$target_out_dir/{{source_file_part}}" ]
   public_deps = [
