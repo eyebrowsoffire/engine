@@ -5,6 +5,7 @@ import 'dart:convert';
 import '../geometry.dart';
 
 class Stack extends Opaque {}
+
 typedef StackPointer = Pointer<Stack>;
 
 /// Generic linear memory allocation
@@ -72,10 +73,9 @@ class _StackScope {
   }
 }
 
-T withStackScope<T>(T Function(_StackScope scope) f)
-{
+T withStackScope<T>(T Function(_StackScope scope) f) {
   final stack = stackSave();
   final T result = f(_StackScope());
-  stackRestore(stack); 
+  stackRestore(stack);
   return result;
 }
