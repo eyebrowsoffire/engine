@@ -9,9 +9,9 @@ SKWASM_EXPORT void canvas_release(CanvasWrapper* wrapper) {
 }
 
 SKWASM_EXPORT void canvas_drawCircle(CanvasWrapper* wrapper,
-                                                       float x,
-                                                       float y,
-                                                       float radius) {
+                                     float x,
+                                     float y,
+                                     float radius) {
   makeCurrent(wrapper->context);
 
   SkPaint p;

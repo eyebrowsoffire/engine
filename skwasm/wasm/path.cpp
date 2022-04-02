@@ -13,8 +13,8 @@ SKWASM_EXPORT void path_destroy(SkPath* path) {
   delete path;
 }
 
-SKWASM_EXPORT SkPath *path_copy(SkPath *path) {
-    return new SkPath(*path);
+SKWASM_EXPORT SkPath* path_copy(SkPath* path) {
+  return new SkPath(*path);
 }
 
 SKWASM_EXPORT void path_setFillType(SkPath* path, SkPathFillType fillType) {
@@ -176,7 +176,6 @@ SKWASM_EXPORT void path_transform(SkPath* path, const SkScalar* matrix33) {
   path->transform(createMatrix(matrix33));
 }
 
-SKWASM_EXPORT void path_getBounds(SkPath* path, SkRect *rect) {
+SKWASM_EXPORT void path_getBounds(SkPath* path, SkRect* rect) {
   *rect = path->getBounds();
 }
-
