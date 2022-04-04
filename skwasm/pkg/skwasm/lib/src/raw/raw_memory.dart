@@ -22,7 +22,7 @@ class _StackScope {
   Pointer<Int8> convertString(String string) {
     final Utf8Encoder utf8Encoder = utf8.encoder;
     final Uint8List encoded = utf8Encoder.convert(string);
-    final Pointer<Int8> pointer = _allocInt8Array(encoded.length + 1);
+    final Pointer<Int8> pointer = allocInt8Array(encoded.length + 1);
     for (int i = 0; i < encoded.length; i++) {
       pointer[i] = encoded[i];
     }
@@ -31,8 +31,8 @@ class _StackScope {
   }
 
   Pointer<Float> convertMatrix4toSkMatrix(Float64List matrix4) {
-    final Pointer<Float> pointer = _allocFloatArray(9);
-    final matrixLength = matrix4.length;
+    final Pointer<Float> pointer = allocFloatArray(9);
+    final int matrixLength = matrix4.length;
 
     double getVal(int index) {
       return (index < matrixLength) ? matrix4[index] : 0.0;
@@ -54,7 +54,7 @@ class _StackScope {
   }
 
   Pointer<Float> convertRect(Rect rect) {
-    final Pointer<Float> pointer = _allocFloatArray(4);
+    final Pointer<Float> pointer = allocFloatArray(4);
     pointer[0] = rect.left;
     pointer[1] = rect.top;
     pointer[2] = rect.right;
@@ -62,19 +62,48 @@ class _StackScope {
     return pointer;
   }
 
-  Pointer<Int8> _allocInt8Array(int count) {
+  Pointer<Float> convertRRect(RRect rect) {
+    final Pointer<Float> pointer = allocFloatArray(12);
+    pointer[0] = rect.left;
+    pointer[1] = rect.top;
+    pointer[2] = rect.right;
+    pointer[3] = rect.bottom;
+
+    pointer[4] = rect.tlRadiusX;
+    pointer[5] = rect.tlRadiusY;
+    pointer[6] = rect.trRadiusX;
+    pointer[7] = rect.trRadiusY;
+
+    pointer[8] = rect.brRadiusX;
+    pointer[9] = rect.brRadiusY;
+    pointer[10] = rect.blRadiusX;
+    pointer[11] = rect.blRadiusY;
+
+    return pointer;
+  }
+
+  Pointer<Float> convertPointArray(List<Offset> points) {
+    final Pointer<Float> pointer = allocFloatArray(points.length * 2);
+    for(int i = 0; i < points.length; i++) {
+      pointer[i * 2] = points[i].dx;
+      pointer[i * 2 + 1] = points[i].dy;
+    }
+    return pointer;
+  }
+
+  Pointer<Int8> allocInt8Array(int count) {
     final int length = count * sizeOf<Int8>();
     return stackAlloc(length.toWasmI32()).cast<Int8>();
   }
 
-  Pointer<Float> _allocFloatArray(int count) {
+  Pointer<Float> allocFloatArray(int count) {
     final int length = count * sizeOf<Float>();
     return stackAlloc(length.toWasmI32()).cast<Float>();
   }
 }
 
 T withStackScope<T>(T Function(_StackScope scope) f) {
-  final stack = stackSave();
+  final StackPointer stack = stackSave();
   final T result = f(_StackScope());
   stackRestore(stack);
   return result;

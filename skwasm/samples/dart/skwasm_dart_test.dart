@@ -4,6 +4,7 @@ import '../../pkg/skwasm/lib/skwasm.dart';
 void main() {
   final Surface surface = Surface('#test-canvas', 400, 400);
   final Canvas canvas = surface.getCanvas();
+  final Path path = Path();
   final Random random = Random();
   for(int i = 0; i < 40; i++) {
     final double x = random.nextDouble() * 400;

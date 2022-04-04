@@ -2,6 +2,7 @@
 #include "export.h"
 #include "helpers.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/pathops/SkPathOps.h"
 
 using namespace Skwasm;
 
@@ -147,10 +148,8 @@ SKWASM_EXPORT void path_addPolygon(SkPath* path,
   path->addPoly(points, count, close);
 }
 
-SKWASM_EXPORT void path_addRRect(SkPath* path,
-                                 const SkScalar* rrectValues,
-                                 SkPathDirection pathDirection) {
-  path->addRRect(createRRect(rrectValues), pathDirection);
+SKWASM_EXPORT void path_addRRect(SkPath* path, const SkScalar* rrectValues) {
+  path->addRRect(createRRect(rrectValues), SkPathDirection::kCW);
 }
 
 SKWASM_EXPORT void path_addPath(SkPath* path,
@@ -178,4 +177,17 @@ SKWASM_EXPORT void path_transform(SkPath* path, const SkScalar* matrix33) {
 
 SKWASM_EXPORT void path_getBounds(SkPath* path, SkRect* rect) {
   *rect = path->getBounds();
+}
+
+SKWASM_EXPORT SkPath* path_combine(SkPathOp operation,
+                                   const SkPath* path1,
+                                   const SkPath* path2) {
+  SkPath* output = new SkPath();
+  if (Op(*path1, *path2, operation, output)) {
+    output->setFillType(path1->getFillType());
+    return output;
+  } else {
+    delete output;
+    return nullptr;
+  }
 }
