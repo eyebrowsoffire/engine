@@ -33,6 +33,8 @@ enum PathOperation {
 class Path {
   final PathHandle _handle;
 
+  PathHandle get handle => _handle;
+
   Path._fromHandle(this._handle);
 
   factory Path() {

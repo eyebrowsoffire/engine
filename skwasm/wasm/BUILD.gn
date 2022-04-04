@@ -5,6 +5,7 @@ wasm_lib("skwasm") {
     "canvas.cpp",
     "export.h",
     "helpers.h",
+    "paint.cpp",
     "path.cpp",
     "surface.cpp",
     "wrappers.h",

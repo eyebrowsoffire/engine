@@ -11,14 +11,17 @@ SKWASM_EXPORT void canvas_release(CanvasWrapper* wrapper) {
 SKWASM_EXPORT void canvas_drawCircle(CanvasWrapper* wrapper,
                                      float x,
                                      float y,
-                                     float radius) {
+                                     float radius,
+                                     SkPaint* paint) {
   makeCurrent(wrapper->context);
 
-  SkPaint p;
-  p.setColor(SK_ColorRED);
-  p.setAntiAlias(true);
-  p.setStyle(SkPaint::kFill_Style);
-  p.setStrokeWidth(10);
+  wrapper->canvas->drawCircle(x, y, radius, *paint);
+}
 
-  wrapper->canvas->drawCircle(x, y, radius, p);
+SKWASM_EXPORT void canvas_drawPath(CanvasWrapper* wrapper,
+                                   SkPath* path,
+                                   SkPaint* paint) {
+  makeCurrent(wrapper->context);
+
+  wrapper->canvas->drawPath(*path, *paint);
 }

@@ -15,18 +15,19 @@
         <script src="skwasm.js"></script>
         <script src="dart_imports.js"></script>
         <script>
+            var dartInstance;
             const dartTestModulePromise = WebAssembly.compileStreaming(fetch('skwasm_dart_test.wasm'));
             document.onreadystatechange = () => {
                 if (document.readyState === "complete") {
                     (async () => {
                         const skwasmModule = (await skwasm()).asm;
                         const dartTestModule = await dartTestModulePromise;
-                        const instance = await WebAssembly.instantiate(dartTestModule, {
+                        dartInstance = await WebAssembly.instantiate(dartTestModule, {
                             "skwasm": skwasmModule,
                             "dart2wasm": dart2wasm,
                             "ffi": {"memory": skwasmModule.memory}
                         });
-                        instance.exports.main();
+                        dartInstance.exports.main();
                     })();
                 }
             }

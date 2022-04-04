@@ -8,9 +8,13 @@ class Stack extends Opaque {}
 
 typedef StackPointer = Pointer<Stack>;
 
+typedef RawScalar = WasmF32;
+typedef RawBool = WasmI32;
+typedef RawSize = WasmI32;
+
 /// Generic linear memory allocation
 @pragma("wasm:import", "skwasm.stackAlloc")
-external Pointer<Void> stackAlloc(WasmI32 length);
+external Pointer<Void> stackAlloc(RawSize length);
 
 @pragma("wasm:import", "skwasm.stackSave")
 external StackPointer stackSave();
@@ -18,7 +22,7 @@ external StackPointer stackSave();
 @pragma("wasm:import", "skwasm.stackRestore")
 external void stackRestore(StackPointer pointer);
 
-class _StackScope {
+class StackScope {
   Pointer<Int8> convertString(String string) {
     final Utf8Encoder utf8Encoder = utf8.encoder;
     final Uint8List encoded = utf8Encoder.convert(string);
@@ -102,9 +106,9 @@ class _StackScope {
   }
 }
 
-T withStackScope<T>(T Function(_StackScope scope) f) {
+T withStackScope<T>(T Function(StackScope scope) f) {
   final StackPointer stack = stackSave();
-  final T result = f(_StackScope());
+  final T result = f(StackScope());
   stackRestore(stack);
   return result;
 }

@@ -1,12 +1,20 @@
 import 'dart:wasm';
-import 'raw/raw_canvas.dart';
+import './geometry.dart';
+import './paint.dart';
+import './path.dart';
+import './raw/raw_canvas.dart';
 
 class Canvas {
-  CanvasHandle handle;
+  CanvasHandle _handle;
 
-  Canvas(this.handle);
+  Canvas(this._handle);
 
-  void drawCircle(double x, double y, double radius) {
-    canvas_drawCircle(handle, x.toWasmF32(), y.toWasmF32(), radius.toWasmF32());
+  void drawCircle(Offset center, double radius, Paint paint) {
+    canvas_drawCircle(_handle, center.dx.toWasmF32(), center.dy.toWasmF32(),
+        radius.toWasmF32(), paint.handle);
+  }
+
+  void drawPath(Path path, Paint paint) {
+    canvas_drawPath(_handle, path.handle, paint.handle);
   }
 }

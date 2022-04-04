@@ -1,23 +1,16 @@
 import 'dart:wasm';
 import 'dart:ffi';
+import './raw_memory.dart';
+import './raw_geometry.dart';
 
 class Path extends Opaque {}
 
 typedef PathHandle = Pointer<Path>;
 
-typedef RawScalar = WasmF32;
-typedef RawBool = WasmI32;
-typedef RawSize = WasmI32;
-
 typedef RawPathFillType = WasmI32;
 typedef RawPathDirection = WasmI32;
 typedef RawArcSize = WasmI32;
 typedef RawPathOperation = WasmI32;
-
-typedef RawRect = Pointer<Float>;
-typedef RawRRect = Pointer<Float>;
-typedef RawPointArray = Pointer<Float>;
-typedef RawMatrix33 = Pointer<Float>;
 
 @pragma('wasm:import', 'skwasm.path_create')
 external PathHandle path_create();
