@@ -45,6 +45,10 @@ class Path {
     return Path._fromHandle(path_copy(source._handle));
   }
 
+  void delete() {
+    path_destroy(_handle);
+  }
+
   PathFillType get fillType {
     return PathFillType.values[path_getFillType(_handle).toIntSigned()];
   }

@@ -1,5 +1,7 @@
 import 'dart:math';
+import 'dart:wasm';
 import '../../pkg/skwasm/lib/skwasm.dart';
+import './bench_paths_recording.dart';
 
 void main() {
   final Surface surface = Surface('#test-canvas', 400, 400);
@@ -29,4 +31,12 @@ void main() {
 
   canvas.drawPath(path, paint);
   surface.flush();
+}
+
+@pragma('wasm:export', 'benchPaths')
+void benchPaths() {
+  for(int i = 0; i < 10; i++) {
+    createPaths();
+    destroyPaths();
+  }
 }

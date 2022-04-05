@@ -28,6 +28,24 @@
                             "ffi": {"memory": skwasmModule.memory}
                         });
                         dartInstance.exports.main();
+
+                        let total = 0;
+                        for(let i = 0; i < 300; i++) {
+                            await (async () => {
+                                return new Promise((resolve) => {
+                                    setTimeout(() => {
+                                        const start = performance.now()
+                                        const time = dartInstance.exports.benchPaths();
+                                        const elapsed = performance.now() - start;
+                                        total += elapsed;
+                                        console.log(`Bench [${i}] took ${elapsed} milliseconds`);
+                                        resolve();
+                                    })
+                                })
+                            })();
+                        }
+
+                        console.log(`Average time: ${total / 300} milliseconds`);
                     })();
                 }
             }
