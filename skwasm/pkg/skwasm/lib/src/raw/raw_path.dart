@@ -1,7 +1,8 @@
-import 'dart:wasm';
 import 'dart:ffi';
-import 'raw_memory.dart';
+import 'dart:wasm';
+
 import 'raw_geometry.dart';
+import 'raw_memory.dart';
 
 class Path extends Opaque {}
 
