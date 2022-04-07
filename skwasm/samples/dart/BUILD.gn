@@ -1,26 +1,82 @@
+import("//build/toolchain/wasm.gni")
 import("//flutter/skwasm/pkg/skwasm/skwasm_dart_sources.gni")
 import("//third_party/dart/build/dart/dart_action.gni")
 
 template("_dart2wasm") {
-  prebuilt_dart_action(target_name) {
-    forward_variables_from(invoker, "*")
+  assert(defined(invoker.main_dart_source))
+  assert(defined(invoker.wasm_out))
 
-    inputs =
-        [ dart_source ] + skwasm_dart_sources + [ "bench_paths_recording.dart" ]
-    outputs = [ wasm_out ]
+  if (is_debug) {
+    compile_output = invoker.wasm_out
+  } else {
+    compile_output = invoker.wasm_out + ".unopt"
+  }
+
+  compile_target_name = target_name + "_compile"
+
+  dart_dependencies = [ invoker.main_dart_source ]
+  if (defined(invoker.dart_dependency_folders)) {
+    foreach(folder, invoker.dart_dependency_folders) {
+      dart_dependencies +=
+          exec_script("//third_party/dart/tools/list_dart_files.py",
+                      [
+                        "absolute",
+                        rebase_path(folder),
+                      ],
+                      "list lines")
+    }
+  }
+
+  prebuilt_dart_action(compile_target_name) {
+    inputs = dart_dependencies
+    outputs = [ compile_output ]
     script = "//third_party/dart/pkg/dart2wasm/bin/dart2wasm.dart"
 
     args = [
-      rebase_path(dart_source),
-      rebase_path(wasm_out),
+      rebase_path(invoker.main_dart_source),
+      rebase_path(compile_output),
     ]
 
     pool = "//flutter/build/dart:dart_pool"
   }
+
+  optimize_target_name = target_name + "_optimize"
+  action(optimize_target_name) {
+    script = "//build/gn_run_binary.py"
+
+    inputs = [ compile_output ]
+    outputs = [ invoker.wasm_out ]
+
+    args = [
+      rebase_path("$emsdk_dir/upstream/bin/wasm-opt", root_build_dir),
+      "-g",
+      "-all",
+      "-Oz",
+      "-tnh",
+      "--nominal",
+      rebase_path(compile_output),
+      "-o",
+      rebase_path(invoker.wasm_out),
+    ]
+
+    public_deps = [ ":$compile_target_name" ]
+  }
+
+  group(target_name) {
+    if (is_debug) {
+      public_deps = [ ":$compile_target_name" ]
+    } else {
+      public_deps = [ ":$optimize_target_name" ]
+    }
+  }
 }
 
 _dart2wasm("_skwasm_dart_test_wasm") {
-  dart_source = "skwasm_dart_test.dart"
+  main_dart_source = "lib/skwasm_dart_test.dart"
+  dart_dependency_folders = [
+    "lib",
+    "//flutter/skwasm/pkg/skwasm/lib",
+  ]
   wasm_out = "$root_out_dir/skwasm_dart_test.wasm"
 }
 
