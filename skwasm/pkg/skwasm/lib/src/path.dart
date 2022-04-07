@@ -1,11 +1,11 @@
 import 'dart:ffi';
 import 'dart:typed_data';
-
-import './geometry.dart';
-import './raw/raw_memory.dart';
-import './vector_math.dart';
-import './raw/raw_path.dart';
 import 'dart:wasm';
+
+import 'geometry.dart';
+import 'raw/raw_memory.dart';
+import 'raw/raw_path.dart';
+import 'vector_math.dart';
 
 enum PathFillType {
   nonZero,
@@ -107,7 +107,7 @@ class Path {
 
   void arcTo(
       Rect rect, double startAngle, double sweepAngle, bool forceMoveTo) {
-    withStackScope((s) {
+    withStackScope((StackScope s) {
       final WasmI32 forceMoveToWasm = forceMoveTo ? 1.toWasmI32() : 0.toWasmI32();
       path_arcToOval(_handle, s.convertRect(rect), startAngle.toWasmF32(),
           sweepAngle.toWasmF32(), forceMoveToWasm);
@@ -159,26 +159,26 @@ class Path {
   }
 
   void addRect(Rect rect) {
-    withStackScope((s) {
+    withStackScope((StackScope s) {
       path_addRect(_handle, s.convertRect(rect));
     });
   }
 
   void addOval(Rect rect) {
-    withStackScope((s) {
+    withStackScope((StackScope s) {
       path_addOval(_handle, s.convertRect(rect));
     });
   }
 
   void addArc(Rect rect, double startAngle, double sweepAngle) {
-    withStackScope((s) {
+    withStackScope((StackScope s) {
       path_addArc(_handle, s.convertRect(rect), startAngle.toWasmF32(),
           sweepAngle.toWasmF32());
     });
   }
 
   void addPolygon(List<Offset> points, bool close) {
-    withStackScope((s) {
+    withStackScope((StackScope s) {
       final WasmI32 closeWasm = close ? 1.toWasmI32() : 0.toWasmI32();
       path_addPolygon(_handle, s.convertPointArray(points),
           points.length.toWasmI32(), closeWasm);
@@ -186,7 +186,7 @@ class Path {
   }
 
   void addRRect(RRect rrect) {
-    withStackScope((s) {
+    withStackScope((StackScope s) {
       path_addRRect(_handle, s.convertRRect(rrect));
     });
   }
@@ -200,7 +200,7 @@ class Path {
   }
 
   void _addPath(Path path, Offset offset, bool extend, {Float64List? matrix4}) {
-    withStackScope((s) {
+    withStackScope((StackScope s) {
       final Pointer<Float> convertedMatrix =
           s.convertMatrix4toSkMatrix(matrix4 ?? Matrix4.identity().toFloat64());
       convertedMatrix[2] += offset.dx;
@@ -230,7 +230,7 @@ class Path {
   }
 
   Path transform(Float64List matrix4) {
-    return withStackScope((s) {
+    return withStackScope((StackScope s) {
       final PathHandle newPathHandle = path_copy(_handle);
       path_transform(newPathHandle, s.convertMatrix4toSkMatrix(matrix4));
       return Path._fromHandle(newPathHandle);
@@ -238,8 +238,8 @@ class Path {
   }
 
   Rect getBounds() {
-    return withStackScope((s) {
-      Pointer<Float> rectBuffer = s.allocFloatArray(4);
+    return withStackScope((StackScope s) {
+      final Pointer<Float> rectBuffer = s.allocFloatArray(4);
       path_getBounds(_handle, rectBuffer);
       return Rect.fromLTRB(
           rectBuffer[0], rectBuffer[1], rectBuffer[2], rectBuffer[3]);

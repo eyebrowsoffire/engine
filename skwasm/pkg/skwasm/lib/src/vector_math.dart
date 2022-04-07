@@ -1065,11 +1065,6 @@ class Matrix4 {
   Float64List toFloat64() {
     return Float64List.fromList(_m4storage);
   }
-
-  @override
-  String toString() {
-    return super.toString();
-  }
 }
 
 /// 3D column vector.

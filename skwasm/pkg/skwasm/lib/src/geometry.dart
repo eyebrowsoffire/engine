@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'dart:typed_data';
-import './hash_codes.dart';
-import './lerp.dart';
+import 'hash_codes.dart';
+import 'lerp.dart';
 
 abstract class OffsetBase {
   const OffsetBase(this._dx, this._dy)

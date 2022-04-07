@@ -19,7 +19,9 @@ wasm_lib("skwasm") {
     "-sALLOW_MEMORY_GROWTH",
   ]
 
-  if(is_debug) {
+  cflags = []
+
+  if (is_debug) {
     ldflags += [
       "-O0",
       "-sDEMANGLE_SUPPORT=1",
@@ -35,6 +37,8 @@ wasm_lib("skwasm") {
       "-sSTANDALONE_WASM",
       "-sEXPORTED_FUNCTIONS=[stackAlloc]",
     ]
+
+    cflags += [ "-flto" ]
   }
 
   deps = [ "//third_party/skia" ]

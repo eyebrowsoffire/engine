@@ -1,7 +1,6 @@
 import 'dart:ffi';
 import 'dart:wasm';
-import './raw_geometry.dart';
-import './raw_memory.dart';
+import 'raw_memory.dart';
 
 class Paint extends Opaque {}
 

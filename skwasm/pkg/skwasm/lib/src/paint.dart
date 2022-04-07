@@ -1,7 +1,8 @@
-import './raw/raw_paint.dart';
-import './lerp.dart';
 import 'dart:math' as math;
 import 'dart:wasm';
+
+import 'lerp.dart';
+import 'raw/raw_paint.dart';
 
 Color _scaleAlpha(Color a, double factor) {
   return a.withAlpha(clampInt((a.alpha * factor).round(), 0, 255));
@@ -202,11 +203,11 @@ class Paint {
 
   PaintHandle get handle => _handle;
 
-  Paint._fromHandle(this._handle);
-
   factory Paint() {
     return Paint._fromHandle(paint_create());
   }
+
+  Paint._fromHandle(this._handle);
 
   BlendMode _cachedBlendMode = BlendMode.srcOver;
 

@@ -1,7 +1,8 @@
+import 'dart:convert';
+import 'dart:ffi';
 import 'dart:typed_data';
 import 'dart:wasm';
-import 'dart:ffi';
-import 'dart:convert';
+
 import '../geometry.dart';
 
 class Stack extends Opaque {}
@@ -13,13 +14,13 @@ typedef RawBool = WasmI32;
 typedef RawSize = WasmI32;
 
 /// Generic linear memory allocation
-@pragma("wasm:import", "skwasm.stackAlloc")
+@pragma('wasm:import', 'skwasm.stackAlloc')
 external Pointer<Void> stackAlloc(RawSize length);
 
-@pragma("wasm:import", "skwasm.stackSave")
+@pragma('wasm:import', 'skwasm.stackSave')
 external StackPointer stackSave();
 
-@pragma("wasm:import", "skwasm.stackRestore")
+@pragma('wasm:import', 'skwasm.stackRestore')
 external void stackRestore(StackPointer pointer);
 
 class StackScope {

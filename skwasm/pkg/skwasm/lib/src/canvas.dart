@@ -1,8 +1,8 @@
 import 'dart:wasm';
-import './geometry.dart';
-import './paint.dart';
-import './path.dart';
-import './raw/raw_canvas.dart';
+import 'geometry.dart';
+import 'paint.dart';
+import 'path.dart';
+import 'raw/raw_canvas.dart';
 
 class Canvas {
   CanvasHandle _handle;

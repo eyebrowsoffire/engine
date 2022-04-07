@@ -1,7 +1,5 @@
-import 'dart:math';
-import 'dart:wasm';
-import '../../pkg/skwasm/lib/skwasm.dart';
-import './bench_paths_recording.dart';
+import 'package:skwasm/skwasm.dart';
+import 'bench_paths_recording.dart';
 
 void main() {
   final Surface surface = Surface('#test-canvas', 400, 400);
@@ -25,7 +23,7 @@ void main() {
 
   final Paint paint = Paint();
   paint.isAntiAlias = true;
-  paint.color = Color.fromARGB(0xFF, 0x00, 0x00, 0xFF);
+  paint.color = const Color.fromARGB(0xFF, 0x00, 0x00, 0xFF);
   paint.style = PaintingStyle.stroke;
   paint.strokeWidth = 3.0;
 
