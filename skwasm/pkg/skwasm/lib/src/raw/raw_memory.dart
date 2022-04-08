@@ -23,6 +23,10 @@ external StackPointer stackSave();
 @pragma('wasm:import', 'skwasm.stackRestore')
 external void stackRestore(StackPointer pointer);
 
+extension BoolToRawWasm on bool {
+  WasmI32 toWasmI32() => this ? 1.toWasmI32() : 0.toWasmI32();
+}
+
 class StackScope {
   Pointer<Int8> convertString(String string) {
     final Utf8Encoder utf8Encoder = utf8.encoder;
@@ -58,6 +62,15 @@ class StackScope {
     return pointer;
   }
 
+  Pointer<Float> convertMatrix4toSkM44(Float64List matrix4) {
+    assert(matrix4.length == 16);
+    final Pointer<Float> pointer = allocFloatArray(16);
+    for (int i = 0; i < 16; i++) {
+      pointer[i] = matrix4[i];
+    }
+    return pointer;
+  }
+
   Pointer<Float> convertRect(Rect rect) {
     final Pointer<Float> pointer = allocFloatArray(4);
     pointer[0] = rect.left;
@@ -89,7 +102,7 @@ class StackScope {
 
   Pointer<Float> convertPointArray(List<Offset> points) {
     final Pointer<Float> pointer = allocFloatArray(points.length * 2);
-    for(int i = 0; i < points.length; i++) {
+    for (int i = 0; i < points.length; i++) {
       pointer[i * 2] = points[i].dx;
       pointer[i * 2 + 1] = points[i].dy;
     }

@@ -1,5 +1,10 @@
+import 'dart:ffi';
+import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:wasm';
+
+import 'package:skwasm/src/raw/raw_memory.dart';
+
 import 'color.dart';
 import 'geometry.dart';
 import 'image.dart';
@@ -31,80 +36,104 @@ class Canvas {
   }
 
   void save() {
-    throw UnimplementedError();
+    canvas_save(_handle);
   }
 
   void saveLayer(Rect? bounds, Paint paint) {
-    throw UnimplementedError();
+    if (bounds != null) {
+      withStackScope((StackScope s) {
+        canvas_saveLayer(_handle, s.convertRect(bounds), paint.handle);
+      });
+    }
+    canvas_saveLayer(_handle, nullptr, paint.handle);
   }
 
   void restore() {
-    throw UnimplementedError();
+    canvas_restore(_handle);
   }
 
   int getSaveCount() {
-    throw UnimplementedError();
+    return canvas_getSaveCount(_handle).toIntSigned();
   }
 
   void translate(double dx, double dy) {
-    throw UnimplementedError();
+    canvas_translate(_handle, dx.toWasmF32(), dy.toWasmF32());
   }
 
   void scale(double sx, [double? sy]) {
-    throw UnimplementedError();
+    canvas_scale(_handle, sx.toWasmF32(), (sy ?? sx).toWasmF32());
   }
 
   void rotate(double radians) {
-    throw UnimplementedError();
+    const double toDegrees = 180 / math.pi;
+    canvas_rotate(_handle, (radians * toDegrees).toWasmF32());
   }
 
   void skew(double sx, double sy) {
-    throw UnimplementedError();
+    canvas_skew(_handle, sx.toWasmF32(), sy.toWasmF32());
   }
 
   void transform(Float64List matrix4) {
-    throw UnimplementedError();
+    withStackScope((StackScope s) {
+      canvas_transform(_handle, s.convertMatrix4toSkM44(matrix4));
+    });
   }
 
   void clipRect(Rect rect,
       {ClipOp clipOp = ClipOp.intersect, bool doAntiAlias = true}) {
-    throw UnimplementedError();
+    withStackScope((StackScope s) {
+      canvas_clipRect(_handle, s.convertRect(rect), clipOp.index.toWasmI32(),
+          doAntiAlias.toWasmI32());
+    });
   }
 
   void clipRRect(RRect rrect, {bool doAntialias = true}) {
-    throw UnimplementedError();
+    withStackScope((StackScope s) {
+      canvas_clipRRect(_handle, s.convertRRect(rrect), doAntialias.toWasmI32());
+    });
   }
 
   void clipPath(Path path, {bool doAntiAlias = true}) {
-    throw UnimplementedError();
+    canvas_clipPath(_handle, path.handle, doAntiAlias.toWasmI32());
   }
 
   void drawColor(Color color, BlendMode blendMode) {
-    throw UnimplementedError();
+    canvas_drawColor(
+        _handle, color.value.toWasmI32(), blendMode.index.toWasmI32());
   }
 
   void drawLine(Offset p1, Offset p2, Paint paint) {
-    throw UnimplementedError();
+    canvas_drawLine(_handle, p1.dx.toWasmF32(), p1.dy.toWasmF32(),
+        p2.dx.toWasmF32(), p2.dy.toWasmF32(), paint.handle);
   }
 
   void drawPaint(Paint paint) {
-    throw UnimplementedError();
+    canvas_drawPaint(_handle, paint.handle);
   }
 
   void drawRect(Rect rect, Paint paint) {
-    throw UnimplementedError();
+    withStackScope((StackScope s) {
+      canvas_drawRect(_handle, s.convertRect(rect), paint.handle);
+    });
   }
 
   void drawRRect(RRect rrect, Paint paint) {
-    throw UnimplementedError();
+    withStackScope((StackScope s) {
+      canvas_drawRRect(_handle, s.convertRRect(rrect), paint.handle);
+    });
   }
 
-  void drawDRRect(RRect outer, RRect intter, Paint paint) {
-    throw UnimplementedError();
+  void drawDRRect(RRect outer, RRect inner, Paint paint) {
+    withStackScope((StackScope s) {
+      canvas_drawDRRect(
+          _handle, s.convertRRect(outer), s.convertRRect(inner), paint.handle);
+    });
   }
 
   void drawOval(Rect rect, Paint paint) {
-    throw UnimplementedError();
+    withStackScope((StackScope s) {
+      canvas_drawOval(_handle, s.convertRect(rect), paint.handle);
+    });
   }
 
   void drawCircle(Offset center, double radius, Paint paint) {
@@ -114,7 +143,16 @@ class Canvas {
 
   void drawArc(Rect rect, double startAngle, double sweepAngle, bool useCenter,
       Paint paint) {
-    throw UnimplementedError();
+    withStackScope((StackScope s) {
+      const double toDegrees = 180 / math.pi;
+      canvas_drawArc(
+          _handle,
+          s.convertRect(rect),
+          (startAngle * toDegrees).toWasmF32(),
+          (sweepAngle * toDegrees).toWasmF32(),
+          useCenter.toWasmI32(),
+          paint.handle);
+    });
   }
 
   void drawPath(Path path, Paint paint) {

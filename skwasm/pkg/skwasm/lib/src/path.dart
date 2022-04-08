@@ -35,11 +35,11 @@ class Path {
 
   PathHandle get handle => _handle;
 
-  Path._fromHandle(this._handle);
-
   factory Path() {
     return Path._fromHandle(path_create());
   }
+
+  Path._fromHandle(this._handle);
 
   factory Path.from(Path source) {
     return Path._fromHandle(path_copy(source._handle));
