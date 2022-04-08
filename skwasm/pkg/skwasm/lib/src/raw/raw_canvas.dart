@@ -7,8 +7,8 @@ import 'raw_path.dart';
 class CanvasWrapper extends Opaque {}
 typedef CanvasHandle = Pointer<CanvasWrapper>;
 
-@pragma('wasm:import', 'skwasm.canvas_release')
-external void canvas_release(CanvasHandle canvas);
+@pragma('wasm:import', 'skwasm.canvas_destroy')
+external void canvas_destroy(CanvasHandle canvas);
 
 @pragma('wasm:import', 'skwasm.canvas_drawCircle')
 external void canvas_drawCircle(

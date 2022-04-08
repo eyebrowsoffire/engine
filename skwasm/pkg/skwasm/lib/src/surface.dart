@@ -23,6 +23,6 @@ class Surface {
   }
 
   Canvas getCanvas() {
-    return Canvas(surface_getCanvas(handle));
+    return Canvas.fromHandle(surface_getCanvas(handle));
   }
 }
