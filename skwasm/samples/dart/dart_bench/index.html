@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Test Skwasm</title>
+        <title>Skwasm Path Benchmark</title>
     </head>
     <body>
         <style>
@@ -16,7 +16,7 @@
         <script src="dart_imports.js"></script>
         <script>
             var dartInstance;
-            const dartTestModulePromise = WebAssembly.compileStreaming(fetch('skwasm_dart_test.wasm'));
+            const dartTestModulePromise = WebAssembly.compileStreaming(fetch('skwasm_dart_bench.wasm'));
             document.onreadystatechange = () => {
                 if (document.readyState === "complete") {
                     (async () => {

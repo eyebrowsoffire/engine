@@ -1,0 +1,29 @@
+import("//flutter/skwasm/samples/dart/dart_wasm.gni")
+
+dart2wasm("_skwasm_dart_bench_wasm") {
+  main_dart_source = "lib/skwasm_dart_bench.dart"
+  dart_dependency_folders = [
+    "lib",
+    "//flutter/skwasm/pkg/skwasm/lib",
+  ]
+  wasm_out = "$root_out_dir/skwasm_dart_bench.wasm"
+}
+
+copy("_skwasm_dart_bench_server") {
+  sources = [
+    "$root_out_dir/skwasm.js",
+    "$root_out_dir/skwasm.wasm",
+    "$root_out_dir/skwasm_dart_bench.wasm",
+    "dart_imports.js",
+    "index.html",
+  ]
+  outputs = [ "$target_out_dir/{{source_file_part}}" ]
+  public_deps = [
+    ":_skwasm_dart_bench_wasm",
+    "//flutter/skwasm/wasm:skwasm",
+  ]
+}
+
+group("skwasm_dart_bench") {
+  public_deps = [ ":_skwasm_dart_bench_server" ]
+}

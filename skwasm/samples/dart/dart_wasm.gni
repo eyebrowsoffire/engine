@@ -2,7 +2,7 @@ import("//build/toolchain/wasm.gni")
 import("//flutter/skwasm/pkg/skwasm/skwasm_dart_sources.gni")
 import("//third_party/dart/build/dart/dart_action.gni")
 
-template("_dart2wasm") {
+template("dart2wasm") {
   assert(defined(invoker.main_dart_source))
   assert(defined(invoker.wasm_out))
 
@@ -69,32 +69,4 @@ template("_dart2wasm") {
       public_deps = [ ":$optimize_target_name" ]
     }
   }
-}
-
-_dart2wasm("_skwasm_dart_test_wasm") {
-  main_dart_source = "lib/skwasm_dart_test.dart"
-  dart_dependency_folders = [
-    "lib",
-    "//flutter/skwasm/pkg/skwasm/lib",
-  ]
-  wasm_out = "$root_out_dir/skwasm_dart_test.wasm"
-}
-
-copy("_skwasm_dart_test_server") {
-  sources = [
-    "$root_out_dir/skwasm.js",
-    "$root_out_dir/skwasm.wasm",
-    "$root_out_dir/skwasm_dart_test.wasm",
-    "dart_imports.js",
-    "index.html",
-  ]
-  outputs = [ "$target_out_dir/{{source_file_part}}" ]
-  public_deps = [
-    ":_skwasm_dart_test_wasm",
-    "//flutter/skwasm/wasm:skwasm",
-  ]
-}
-
-group("skwasm_dart_test") {
-  public_deps = [ ":_skwasm_dart_test_server" ]
 }

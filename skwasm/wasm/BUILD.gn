@@ -38,7 +38,10 @@ wasm_lib("skwasm") {
       "-sEXPORTED_FUNCTIONS=[stackAlloc]",
     ]
 
-    cflags += [ "-flto" ]
+    cflags += [
+      "-flto",
+      "-fvisibility=hidden",
+    ]
   }
 
   deps = [ "//third_party/skia" ]

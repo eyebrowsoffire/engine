@@ -18,7 +18,7 @@ external void canvas_destroy(CanvasHandle canvas);
 @pragma('wasm:import', 'skwasm.canvas_save')
 external void canvas_save(CanvasHandle canvas);
 
-@pragma('wasm:import', 'swkasm.canvas_saveLayer')
+@pragma('wasm:import', 'skwasm.canvas_saveLayer')
 external void canvas_saveLayer(
     CanvasHandle canvas, RawRect rect, PaintHandle paint);
 

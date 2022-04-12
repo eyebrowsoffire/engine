@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Test Skwasm</title>
+    </head>
+    <body>
+        <style>
+            canvas {
+                position: absolute;
+                width: 400;
+                height: 400;
+            }
+        </style>    
+        <canvas id="test-canvas" width=400 height=400></canvas>
+        <script src="skwasm.js"></script>
+        <script src="dart_imports.js"></script>
+        <script>
+            var dartInstance;
+            const dartTestModulePromise = WebAssembly.compileStreaming(fetch('skwasm_dart_test.wasm'));
+            document.onreadystatechange = () => {
+                if (document.readyState === "complete") {
+                    (async () => {
+                        const skwasmModule = (await skwasm()).asm;
+                        const dartTestModule = await dartTestModulePromise;
+                        dartInstance = await WebAssembly.instantiate(dartTestModule, {
+                            "skwasm": skwasmModule,
+                            "dart2wasm": dart2wasm,
+                            "ffi": {"memory": skwasmModule.memory}
+                        });
+                        dartInstance.exports.main();
+
+                        const drawFrame = () => {
+                            dartInstance.exports.tick(performance.now());
+                            requestAnimationFrame(drawFrame);
+                        };
+                        drawFrame();
+                    })();
+                }
+            }
+        </script>
+    </body>
+</html>

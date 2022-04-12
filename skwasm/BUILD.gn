@@ -2,7 +2,8 @@ import("//build/toolchain/wasm.gni")
 
 group("skwasm") {
   deps = [
-    "//flutter/skwasm/samples/dart:skwasm_dart_test",
+    "//flutter/skwasm/samples/dart/dart_bench:skwasm_dart_bench",
+    "//flutter/skwasm/samples/dart/dart_test:skwasm_dart_test",
     "//flutter/skwasm/samples/js:skwasm_js_sample",
     "//flutter/skwasm/wasm:skwasm",
   ]
