@@ -73,11 +73,10 @@ class CkCanvas {
     bool useCenter,
     CkPaint paint,
   ) {
-    const double toDegrees = 180 / math.pi;
     skCanvas.drawArc(
       toSkRect(oval),
-      startAngle * toDegrees,
-      sweepAngle * toDegrees,
+      toDegrees(startAngle),
+      toDegrees(sweepAngle),
       useCenter,
       paint.skiaObject,
     );

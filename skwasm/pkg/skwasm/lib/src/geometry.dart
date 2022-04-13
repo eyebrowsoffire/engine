@@ -3,6 +3,10 @@ import 'dart:typed_data';
 import 'hash_codes.dart';
 import 'lerp.dart';
 
+double toDegrees(double radians) {
+  return radians * 180 / math.pi;
+}
+
 abstract class OffsetBase {
   const OffsetBase(this._dx, this._dy)
       : assert(_dx != null), // ignore: unnecessary_null_comparison

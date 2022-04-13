@@ -108,9 +108,14 @@ class Path {
   void arcTo(
       Rect rect, double startAngle, double sweepAngle, bool forceMoveTo) {
     withStackScope((StackScope s) {
-      final WasmI32 forceMoveToWasm = forceMoveTo ? 1.toWasmI32() : 0.toWasmI32();
-      path_arcToOval(_handle, s.convertRect(rect), startAngle.toWasmF32(),
-          sweepAngle.toWasmF32(), forceMoveToWasm);
+      final WasmI32 forceMoveToWasm =
+          forceMoveTo ? 1.toWasmI32() : 0.toWasmI32();
+      path_arcToOval(
+          _handle,
+          s.convertRect(rect),
+          toDegrees(startAngle).toWasmF32(),
+          toDegrees(sweepAngle).toWasmF32(),
+          forceMoveToWasm);
     });
   }
 
@@ -129,7 +134,7 @@ class Path {
         _handle,
         radius.x.toWasmF32(),
         radius.y.toWasmF32(),
-        rotation.toWasmF32(),
+        toDegrees(rotation).toWasmF32(),
         arcSize.index.toWasmI32(),
         pathDirection.index.toWasmI32(),
         arcEnd.dx.toWasmF32(),
@@ -151,7 +156,7 @@ class Path {
         _handle,
         radius.x.toWasmF32(),
         radius.y.toWasmF32(),
-        rotation.toWasmF32(),
+        toDegrees(rotation).toWasmF32(),
         arcSize.index.toWasmI32(),
         pathDirection.index.toWasmI32(),
         arcEndDelta.dx.toWasmF32(),
@@ -172,8 +177,8 @@ class Path {
 
   void addArc(Rect rect, double startAngle, double sweepAngle) {
     withStackScope((StackScope s) {
-      path_addArc(_handle, s.convertRect(rect), startAngle.toWasmF32(),
-          sweepAngle.toWasmF32());
+      path_addArc(_handle, s.convertRect(rect),
+          toDegrees(startAngle).toWasmF32(), toDegrees(sweepAngle).toWasmF32());
     });
   }
 

@@ -1,5 +1,4 @@
 import 'dart:ffi';
-import 'dart:math' as math;
 import 'dart:typed_data';
 import 'dart:wasm';
 
@@ -44,8 +43,9 @@ class Canvas {
       withStackScope((StackScope s) {
         canvas_saveLayer(_handle, s.convertRect(bounds), paint.handle);
       });
+    } else {
+      canvas_saveLayer(_handle, nullptr, paint.handle);
     }
-    canvas_saveLayer(_handle, nullptr, paint.handle);
   }
 
   void restore() {
@@ -65,8 +65,7 @@ class Canvas {
   }
 
   void rotate(double radians) {
-    const double toDegrees = 180 / math.pi;
-    canvas_rotate(_handle, (radians * toDegrees).toWasmF32());
+    canvas_rotate(_handle, toDegrees(radians).toWasmF32());
   }
 
   void skew(double sx, double sy) {
@@ -144,12 +143,11 @@ class Canvas {
   void drawArc(Rect rect, double startAngle, double sweepAngle, bool useCenter,
       Paint paint) {
     withStackScope((StackScope s) {
-      const double toDegrees = 180 / math.pi;
       canvas_drawArc(
           _handle,
           s.convertRect(rect),
-          (startAngle * toDegrees).toWasmF32(),
-          (sweepAngle * toDegrees).toWasmF32(),
+          toDegrees(startAngle).toWasmF32(),
+          toDegrees(sweepAngle).toWasmF32(),
           useCenter.toWasmI32(),
           paint.handle);
     });

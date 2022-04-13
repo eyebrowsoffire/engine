@@ -108,7 +108,7 @@ external void path_addPolygon(
 external void path_addRRect(
     PathHandle path, RawRRect rrectValues);
 
-@pragma('wasm:import', 'skwasm.addPath')
+@pragma('wasm:import', 'skwasm.path_addPath')
 external void path_addPath(PathHandle path, PathHandle other,
     RawMatrix33 matrix33, RawBool extendPath);
 
