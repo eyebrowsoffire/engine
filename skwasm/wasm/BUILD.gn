@@ -7,6 +7,7 @@ wasm_lib("skwasm") {
     "helpers.h",
     "paint.cpp",
     "path.cpp",
+    "picture.cpp",
     "surface.cpp",
     "wrappers.h",
   ]

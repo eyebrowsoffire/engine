@@ -13,13 +13,14 @@ void main() {
 
 @pragma('wasm:export', 'tick')
 void tick(WasmF32 milliseconds) {
-  final Canvas canvas = surface.getCanvas();
-
   final double globalTime = (milliseconds.toDouble() / 1000.0);
   if (initialTime == null) {
     initialTime = globalTime;
   }
   final double time = globalTime - initialTime!;
+  final PictureRecorder recorder = PictureRecorder();
+  final Canvas canvas = Canvas(recorder);
+
   canvas.save();
 
   drawBackground(canvas, time);
@@ -32,6 +33,10 @@ void tick(WasmF32 milliseconds) {
   drawWave(canvas, time);
 
   canvas.restore();
+
+  final Picture picture = recorder.endRecording();
+
+  surface.getCanvas().drawPicture(picture);
   surface.flush();
 }
 
@@ -242,8 +247,7 @@ void drawPath(Canvas canvas, double time) {
   canvas.restore();
 }
 
-void drawWave(Canvas canvas, double time)
-{
+void drawWave(Canvas canvas, double time) {
   canvas.save();
 
   final Path wavePath = Path();

@@ -2,9 +2,9 @@ import 'dart:ffi';
 import 'dart:wasm';
 import 'raw_memory.dart';
 
-class Paint extends Opaque {}
+class RawPaint extends Opaque {}
 
-typedef PaintHandle = Pointer<Paint>;
+typedef PaintHandle = Pointer<RawPaint>;
 
 typedef RawBlendMode = WasmI32;
 typedef RawPaintStyle = WasmI32;

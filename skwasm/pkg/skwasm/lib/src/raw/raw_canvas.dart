@@ -5,6 +5,7 @@ import 'raw_geometry.dart';
 import 'raw_memory.dart';
 import 'raw_paint.dart';
 import 'raw_path.dart';
+import 'raw_picture.dart';
 
 class CanvasWrapper extends Opaque {}
 
@@ -98,3 +99,6 @@ external void canvas_drawArc(
 @pragma('wasm:import', 'skwasm.canvas_drawPath')
 external void canvas_drawPath(
     CanvasHandle canvas, PathHandle path, PaintHandle paint);
+
+@pragma('wasm:import', 'skwasm.canvas_drawPicture')
+external void canvas_drawPicture(CanvasHandle canvas, PictureHandle picture);

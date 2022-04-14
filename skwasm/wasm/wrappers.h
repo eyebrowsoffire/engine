@@ -18,6 +18,9 @@ struct CanvasWrapper {
 };
 
 inline void makeCurrent(EMSCRIPTEN_WEBGL_CONTEXT_HANDLE handle) {
+  if (!handle)
+    return;
+
   int result = emscripten_webgl_make_context_current(handle);
   if (result != EMSCRIPTEN_RESULT_SUCCESS) {
     printf("make_context failed: %d", result);

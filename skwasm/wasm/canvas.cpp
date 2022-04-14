@@ -153,3 +153,10 @@ SKWASM_EXPORT void canvas_drawPath(CanvasWrapper* wrapper,
 
   wrapper->canvas->drawPath(*path, *paint);
 }
+
+SKWASM_EXPORT void canvas_drawPicture(CanvasWrapper* wrapper,
+                                      SkPicture* picture) {
+  makeCurrent(wrapper->context);
+
+  wrapper->canvas->drawPicture(picture);
+}

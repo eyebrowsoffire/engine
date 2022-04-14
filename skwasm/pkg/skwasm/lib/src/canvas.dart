@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:wasm';
 
 import 'package:skwasm/src/raw/raw_memory.dart';
+import 'package:skwasm/src/raw/raw_picture.dart';
 
 import 'color.dart';
 import 'geometry.dart';
@@ -27,6 +28,13 @@ enum ClipOp {
 
 class Canvas {
   CanvasHandle _handle;
+
+  factory Canvas(PictureRecorder recorder, [Rect cullRect = Rect.largest]) {
+    return Canvas.fromHandle(withStackScope((StackScope s) {
+      return pictureRecorder_beginRecording(
+          recorder.handle, s.convertRect(cullRect));
+    }));
+  }
 
   Canvas.fromHandle(this._handle);
 
@@ -170,7 +178,7 @@ class Canvas {
   }
 
   void drawPicture(Picture picture) {
-    throw UnimplementedError();
+    canvas_drawPicture(_handle, picture.handle);
   }
 
   void drawParagraph(Paragraph paragraph, Offset offset) {

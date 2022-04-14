@@ -4,9 +4,9 @@ import 'dart:wasm';
 import 'raw_geometry.dart';
 import 'raw_memory.dart';
 
-class Path extends Opaque {}
+class RawPath extends Opaque {}
 
-typedef PathHandle = Pointer<Path>;
+typedef PathHandle = Pointer<RawPath>;
 
 typedef RawPathFillType = WasmI32;
 typedef RawPathDirection = WasmI32;
