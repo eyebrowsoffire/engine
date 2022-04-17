@@ -18,9 +18,15 @@ wasm_lib("skwasm") {
     "-sUSE_WEBGL2=1",
     "-sMAX_WEBGL_VERSION=2",
     "-sALLOW_MEMORY_GROWTH",
+    "-sOFFSCREENCANVAS_SUPPORT",
+    "-sUSE_PTHREADS",
+    "-pthread",
+    "-sIMPORTED_MEMORY=0",
   ]
 
-  cflags = []
+  cflags = [
+    "-sUSE_PTHREADS",
+  ]
 
   if (is_debug) {
     ldflags += [
@@ -32,10 +38,9 @@ wasm_lib("skwasm") {
     ]
   } else {
     ldflags += [
-      "-Oz",
+      "-O0",
       "--closure=1",
       "-flto",
-      "-sSTANDALONE_WASM",
       "-sEXPORTED_FUNCTIONS=[stackAlloc]",
     ]
 

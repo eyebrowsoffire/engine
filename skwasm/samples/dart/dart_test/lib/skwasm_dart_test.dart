@@ -36,8 +36,7 @@ void tick(WasmF32 milliseconds) {
 
   final Picture picture = recorder.endRecording();
 
-  surface.getCanvas().drawPicture(picture);
-  surface.flush();
+  surface.renderPicture(picture);
 }
 
 void drawBackground(Canvas canvas, double time) {

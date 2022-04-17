@@ -40,26 +40,28 @@ template("dart2wasm") {
     pool = "//flutter/build/dart:dart_pool"
   }
 
-  optimize_target_name = target_name + "_optimize"
-  action(optimize_target_name) {
-    script = "//build/gn_run_binary.py"
+  if(!is_debug) {
+    optimize_target_name = target_name + "_optimize"
+    action(optimize_target_name) {
+      script = "//build/gn_run_binary.py"
 
-    inputs = [ compile_output ]
-    outputs = [ invoker.wasm_out ]
+      inputs = [ compile_output ]
+      outputs = [ invoker.wasm_out ]
 
-    args = [
-      rebase_path("$emsdk_dir/upstream/bin/wasm-opt", root_build_dir),
-      "-g",
-      "-all",
-      "-Oz",
-      "-tnh",
-      "--nominal",
-      rebase_path(compile_output),
-      "-o",
-      rebase_path(invoker.wasm_out),
-    ]
+      args = [
+        rebase_path("$emsdk_dir/upstream/bin/wasm-opt", root_build_dir),
+        "-g",
+        "-all",
+        "-Oz",
+        "-tnh",
+        "--nominal",
+        rebase_path(compile_output),
+        "-o",
+        rebase_path(invoker.wasm_out),
+      ]
 
-    public_deps = [ ":$compile_target_name" ]
+      public_deps = [ ":$compile_target_name" ]
+    }
   }
 
   group(target_name) {

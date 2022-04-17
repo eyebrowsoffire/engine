@@ -3,7 +3,8 @@ import 'bench_paths_recording.dart';
 
 void main() {
   final Surface surface = Surface('#test-canvas', 400, 400);
-  final Canvas canvas = surface.getCanvas();
+  final PictureRecorder recorder = PictureRecorder();
+  final Canvas canvas = Canvas(recorder);
   for (double x = 10.0; x < 400.0; x += 20) {
     for (double y = 10.0; y < 400.0; y += 20) {
       final Paint paint = Paint();
@@ -28,7 +29,7 @@ void main() {
   paint.strokeWidth = 3.0;
 
   canvas.drawPath(path, paint);
-  surface.flush();
+  surface.renderPicture(recorder.endRecording());
 }
 
 @pragma('wasm:export', 'benchPaths')

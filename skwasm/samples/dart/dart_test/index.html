@@ -20,12 +20,13 @@
             document.onreadystatechange = () => {
                 if (document.readyState === "complete") {
                     (async () => {
-                        const skwasmModule = (await skwasm()).asm;
+                        const skwasmJs = await skwasm();
+                        const skwasmModule = skwasmJs.asm;
                         const dartTestModule = await dartTestModulePromise;
                         dartInstance = await WebAssembly.instantiate(dartTestModule, {
                             "skwasm": skwasmModule,
                             "dart2wasm": dart2wasm,
-                            "ffi": {"memory": skwasmModule.memory}
+                            "ffi": {"memory": skwasmJs.wasmMemory}
                         });
                         dartInstance.exports.main();
 

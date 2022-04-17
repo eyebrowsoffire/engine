@@ -1,20 +1,20 @@
 import 'dart:ffi';
 import 'dart:wasm';
 
-import 'raw_canvas.dart';
+import 'package:skwasm/src/raw/raw_picture.dart';
 
-class SurfaceWrapper extends Opaque {}
-typedef SurfaceHandle = Pointer<SurfaceWrapper>;
+class RawSurface extends Opaque {}
 
-@pragma('wasm:import', 'skwasm.createSurfaceFromCanvas')
-external SurfaceHandle createSurfaceFromCanvas(
-    Pointer<Int8> querySelector, WasmI32 width, WasmI32 height);
+typedef SurfaceHandle = Pointer<RawSurface>;
+
+@pragma('wasm:import', 'skwasm.surface_createFromCanvas')
+external SurfaceHandle surface_createFromCanvas(Pointer<Int8> querySelector);
 
 @pragma('wasm:import', 'skwasm.surface_destroy')
 external void surface_destroy(SurfaceHandle surface);
 
-@pragma('wasm:import', 'skwasm.surface_getCanvas')
-external CanvasHandle surface_getCanvas(SurfaceHandle surface);
+@pragma('wasm:import', 'skwasm.surface_setCanvasSize')
+external void surface_setCanvasSize(SurfaceHandle surface, WasmI32 width, WasmI32 height);
 
-@pragma('wasm:import', 'skwasm.surface_flush')
-external void surface_flush(SurfaceHandle surface);
+@pragma('wasm:import', 'skwasm.surface_renderPicture')
+external void surface_renderPicture(SurfaceHandle surface, PictureHandle picture);
