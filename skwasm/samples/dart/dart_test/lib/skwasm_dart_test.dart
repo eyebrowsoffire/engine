@@ -8,7 +8,8 @@ late Surface surface;
 double? initialTime;
 
 void main() {
-  surface = Surface('#test-canvas', 400, 400);
+  surface = Surface('#test-canvas');
+  surface.setSize(400, 400);
 }
 
 @pragma('wasm:export', 'tick')

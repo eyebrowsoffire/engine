@@ -2,7 +2,7 @@ import 'package:skwasm/skwasm.dart';
 import 'bench_paths_recording.dart';
 
 void main() {
-  final Surface surface = Surface('#test-canvas', 400, 400);
+  final Surface surface = Surface('#test-canvas');
   final PictureRecorder recorder = PictureRecorder();
   final Canvas canvas = Canvas(recorder);
   for (double x = 10.0; x < 400.0; x += 20) {

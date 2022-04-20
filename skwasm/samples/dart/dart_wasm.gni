@@ -35,6 +35,9 @@ template("dart2wasm") {
     args = [
       rebase_path(invoker.main_dart_source),
       rebase_path(compile_output),
+      "--import-shared-memory",
+      "--shared-memory-max-pages",
+      "32768"
     ]
 
     pool = "//flutter/build/dart:dart_pool"

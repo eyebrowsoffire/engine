@@ -16,6 +16,12 @@
 using namespace Skwasm;
 
 namespace {
+
+class Surface;
+void fDispose(Surface* surface);
+void fSetCanvasSize(Surface* surface, int width, int height);
+void fRenderPicture(Surface* surface, SkPicture* picture);
+
 class Surface {
  public:
   Surface(const char* canvasID) : _canvasID(canvasID) {
@@ -23,8 +29,6 @@ class Surface {
     pthread_attr_init(&attr);
     emscripten_pthread_attr_settransferredcanvases(&attr, _canvasID.c_str());
 
-    pthread_mutex_init(&_mutex, nullptr);
-    pthread_cond_init(&_condition, nullptr);
     pthread_create(
         &_thread, &attr,
         [](void* context) -> void* {
@@ -36,75 +40,28 @@ class Surface {
   }
 
   void dispose() {
-    pthread_mutex_lock(&_mutex);
-    _exit = true;
-
-    pthread_cond_broadcast(&_condition);
+    emscripten_dispatch_to_thread(_thread, EM_FUNC_SIG_VI,
+                                  reinterpret_cast<void*>(fDispose), nullptr,
+                                  this);
   }
 
   void setCanvasSize(int width, int height) {
-    pthread_mutex_lock(&_mutex);
-
-    _desiredCanvasWidth = width;
-    _desiredCanvasHeight = height;
-
-    pthread_mutex_unlock(&_mutex);
-    pthread_cond_broadcast(&_condition);
+    emscripten_dispatch_to_thread(_thread, EM_FUNC_SIG_VIII,
+                                  reinterpret_cast<void*>(fSetCanvasSize),
+                                  nullptr, this, width, height);
   }
 
-  void renderPicture(sk_sp<SkPicture> picture) {
-    pthread_mutex_lock(&_mutex);
-
-    // Do a swap so that if there is an old picture, it is not freed inside the
-    // lock.
-    std::swap(picture, _queuedPicture);
-
-    pthread_mutex_unlock(&_mutex);
-    pthread_cond_broadcast(&_condition);
+  void renderPicture(SkPicture* picture) {
+    picture->ref();
+    emscripten_dispatch_to_thread(_thread, EM_FUNC_SIG_VII,
+                                  reinterpret_cast<void*>(fRenderPicture),
+                                  nullptr, this, picture);
   }
 
  private:
   void _runWorker() {
     _init();
-    for (;;) {
-      bool shouldExit = false;
-      bool recreateSurface = false;
-      sk_sp<SkPicture> picture = nullptr;
-      pthread_mutex_lock(&_mutex);
-      for (;;) {
-        shouldExit = _exit;
-        if (_desiredCanvasWidth != _canvasWidth ||
-            _desiredCanvasHeight != _canvasHeight) {
-          recreateSurface = true;
-          _canvasWidth = _desiredCanvasWidth;
-          _canvasHeight = _desiredCanvasHeight;
-        }
-
-        std::swap(picture, _queuedPicture);
-
-        if (!recreateSurface && !picture && !shouldExit) {
-          pthread_cond_wait(&_condition, &_mutex);
-        } else {
-          pthread_mutex_unlock(&_mutex);
-          break;
-        }
-      }
-
-      if (shouldExit) {
-        pthread_mutex_destroy(&_mutex);
-        pthread_cond_destroy(&_condition);
-        delete this;
-        return;
-      }
-
-      if (recreateSurface) {
-        _recreateSurface();
-      }
-
-      if (picture) {
-        _renderPicture(picture.get());
-      }
-    }
+    emscripten_unwind_to_js_event_loop();
   }
 
   void _init() {
@@ -153,6 +110,16 @@ class Surface {
     emscripten_glGetIntegerv(GL_STENCIL_BITS, &_stencil);
   }
 
+  void _dispose() { delete this; }
+
+  void _setCanvasSize(int width, int height) {
+    if (_canvasWidth != width || _canvasHeight != height) {
+      _canvasWidth = width;
+      _canvasHeight = height;
+      _recreateSurface();
+    }
+  }
+
   void _recreateSurface() {
     GrBackendRenderTarget target(_canvasWidth, _canvasHeight, _sampleCount,
                                  _stencil, _fbInfo);
@@ -170,19 +137,12 @@ class Surface {
     auto canvas = _surface->getCanvas();
     canvas->drawPicture(picture);
     _surface->flush();
-
-    emscripten_unwind_to_js_event_loop();
   }
 
   std::string _canvasID;
 
-  int _desiredCanvasWidth = 0;
-  int _desiredCanvasHeight = 0;
   int _canvasWidth = 0;
   int _canvasHeight = 0;
-  bool _exit = false;
-
-  sk_sp<SkPicture> _queuedPicture = nullptr;
 
   EMSCRIPTEN_WEBGL_CONTEXT_HANDLE _glContext = 0;
   sk_sp<GrDirectContext> _grContext = nullptr;
@@ -191,10 +151,26 @@ class Surface {
   GrGLint _sampleCount;
   GrGLint _stencil;
 
-  pthread_mutex_t _mutex;
-  pthread_cond_t _condition;
   pthread_t _thread;
+
+  friend void fDispose(Surface* surface);
+  friend void fSetCanvasSize(Surface* surface, int width, int height);
+  friend void fRenderPicture(Surface* surface, SkPicture* picture);
 };
+
+void fDispose(Surface* surface) {
+  surface->_dispose();
+}
+
+void fSetCanvasSize(Surface* surface, int width, int height) {
+  surface->_setCanvasSize(width, height);
+}
+
+void fRenderPicture(Surface* surface, SkPicture* picture) {
+  surface->_renderPicture(picture);
+  picture->unref();
+}
+
 }  // namespace
 
 SKWASM_EXPORT Surface* surface_createFromCanvas(const char* canvasID) {
@@ -212,5 +188,5 @@ SKWASM_EXPORT void surface_setCanvasSize(Surface* surface,
 }
 
 SKWASM_EXPORT void surface_renderPicture(Surface* surface, SkPicture* picture) {
-  surface->renderPicture(sk_ref_sp(picture));
+  surface->renderPicture(picture);
 }
