@@ -37,13 +37,13 @@ template("dart2wasm") {
       rebase_path(compile_output),
       "--import-shared-memory",
       "--shared-memory-max-pages",
-      "32768"
+      "32768",
     ]
 
     pool = "//flutter/build/dart:dart_pool"
   }
 
-  if(!is_debug) {
+  if (!is_debug) {
     optimize_target_name = target_name + "_optimize"
     action(optimize_target_name) {
       script = "//build/gn_run_binary.py"

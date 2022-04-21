@@ -12,8 +12,8 @@ dart2wasm("_skwasm_dart_test_wasm") {
 copy("_skwasm_dart_test_server") {
   sources = [
     "$root_out_dir/skwasm.js",
-    "$root_out_dir/skwasm.worker.js",
     "$root_out_dir/skwasm.wasm",
+    "$root_out_dir/skwasm.worker.js",
     "$root_out_dir/skwasm_dart_test.wasm",
     "dart_imports.js",
     "index.html",
