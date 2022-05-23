@@ -405,6 +405,20 @@ class ImageFilter {
     return engine.EngineImageFilter.blur(sigmaX: sigmaX, sigmaY: sigmaY, tileMode: tileMode);
   }
 
+  // ignore: avoid_unused_constructor_parameters
+  factory ImageFilter.dilate({ double radiusX = 0.0, double radiusY = 0.0 }) {
+    // TODO(fzyzcjy): implement dilate. https://github.com/flutter/flutter/issues/101085
+    throw UnimplementedError(
+        'ImageFilter.dilate not implemented for web platform.');
+  }
+
+  // ignore: avoid_unused_constructor_parameters
+  factory ImageFilter.erode({ double radiusX = 0.0, double radiusY = 0.0 }) {
+    // TODO(fzyzcjy): implement erode. https://github.com/flutter/flutter/issues/101085
+    throw UnimplementedError(
+        'ImageFilter.erode not implemented for web platform.');
+  }
+
   factory ImageFilter.matrix(Float64List matrix4, {FilterQuality filterQuality = FilterQuality.low}) {
     if (matrix4.length != 16)
       throw ArgumentError('"matrix4" must have 16 entries.');
@@ -466,6 +480,20 @@ Future<Codec> instantiateImageCodec(
     return engine.skiaInstantiateImageCodec(list, targetWidth, targetHeight);
   } else {
     final html.Blob blob = html.Blob(<dynamic>[list.buffer]);
+    return engine.HtmlBlobCodec(blob);
+  }
+}
+
+Future<Codec> instantiateImageCodecFromBuffer(
+  ImmutableBuffer buffer, {
+  int? targetWidth,
+  int? targetHeight,
+  bool allowUpscaling = true,
+}) async {
+  if (engine.useCanvasKit) {
+    return engine.skiaInstantiateImageCodec(buffer._list!, targetWidth, targetHeight);
+  } else {
+    final html.Blob blob = html.Blob(<dynamic>[buffer._list!.buffer]);
     return engine.HtmlBlobCodec(blob);
   }
 }
@@ -721,15 +749,21 @@ class ImageShader extends Shader {
 }
 
 class ImmutableBuffer {
-  ImmutableBuffer._(this.length);
+  ImmutableBuffer._(this._length);
   static Future<ImmutableBuffer> fromUint8List(Uint8List list) async {
     final ImmutableBuffer instance = ImmutableBuffer._(list.length);
     instance._list = list;
     return instance;
   }
 
+  static Future<ImmutableBuffer> fromAsset(String assetKey) async {
+    throw UnsupportedError('ImmutableBuffer.fromAsset is not supported on the web.');
+  }
+
   Uint8List? _list;
-  final int length;
+
+  int get length => _length;
+  int _length;
 
   bool get debugDisposed {
     late bool disposed;

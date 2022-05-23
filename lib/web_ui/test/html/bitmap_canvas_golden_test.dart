@@ -11,7 +11,6 @@ import 'package:ui/src/engine.dart';
 import 'package:ui/ui.dart';
 
 import 'package:web_engine_tester/golden_tester.dart';
-import '../common.dart';
 import 'screenshot.dart';
 
 void main() {
@@ -268,6 +267,28 @@ Future<void> testMain() async {
       region: canvasSize,
       maxDiffRatePercent: 1.0,
       pixelComparison: PixelComparison.precise,
+    );
+  });
+
+  // Regression test for https://github.com/flutter/flutter/issues/96498. When
+  // a picture is made of just text that can be rendered using plain HTML,
+  // BitmapCanvas should not create any <canvas> elements as they are expensive.
+  test('does not allocate bitmap canvas just for text', () async {
+    canvas = BitmapCanvas(const Rect.fromLTWH(0, 0, 50, 50), RenderStrategy());
+
+    final ParagraphBuilder builder = ParagraphBuilder(ParagraphStyle(fontFamily: 'Roboto'));
+    builder.addText('Hello');
+    final CanvasParagraph paragraph = builder.build() as CanvasParagraph;
+    paragraph.layout(const ParagraphConstraints(width: 1000));
+
+    canvas.drawParagraph(paragraph, const Offset(8.5, 8.5));
+    expect(
+      canvas.rootElement.querySelectorAll('canvas'),
+      isEmpty,
+    );
+    expect(
+      canvas.rootElement.querySelectorAll('flt-paragraph').single.innerText,
+      'Hello',
     );
   });
 }
