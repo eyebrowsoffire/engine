@@ -1,8 +1,6 @@
 import("//build/toolchain/wasm.gni")
 
 wasm_lib("skwasm") {
-  use_pthreads = true
-
   sources = [
     "canvas.cpp",
     "export.h",
@@ -22,9 +20,10 @@ wasm_lib("skwasm") {
     "-sOFFSCREENCANVAS_SUPPORT",
     "-sPTHREAD_POOL_SIZE=1",
     "-sALLOW_MEMORY_GROWTH",
+    "-sUSE_PTHREADS=1",
   ]
 
-  cflags = []
+  cflags = [ "-pthread" ]
 
   if (is_debug) {
     ldflags += [
@@ -48,5 +47,26 @@ wasm_lib("skwasm") {
     ]
   }
 
-  deps = [ "//third_party/skia" ]
+  extra_outputs = [ "$root_out_dir/skwasm.worker.js" ]
+
+  deps = [
+    "//third_party/skia",
+    "//third_party/skia/modules/canvaskit:create_notomono_cpp",
+  ]
+}
+
+copy("copy_skwasm") {
+  skwasm_target = ":skwasm(//build/toolchain/wasm)"
+
+  deps = [ skwasm_target ]
+
+  skwasm_out_dir = get_label_info(skwasm_target, "root_out_dir")
+
+  sources = [
+    "$skwasm_out_dir/skwasm.js",
+    "$skwasm_out_dir/skwasm.wasm",
+    "$skwasm_out_dir/skwasm.worker.js",
+  ]
+
+  outputs = [ "$root_out_dir/skwasm/{{source_file_part}}" ]
 }

@@ -1,13 +1,14 @@
 copy("_copy_js_server") {
   sources = [
-    "$root_out_dir/skwasm.js",
-    "$root_out_dir/skwasm.wasm",
+    "$root_out_dir/skwasm/skwasm.js",
+    "$root_out_dir/skwasm/skwasm.wasm",
+    "$root_out_dir/skwasm/skwasm.worker.js",
     "index.html",
   ]
   outputs = [ "$target_out_dir/{{source_file_part}}" ]
-  deps = [ "//flutter/skwasm/wasm:skwasm" ]
+  public_deps = [ "//flutter/skwasm:skwasm" ]
 }
 
 group("skwasm_js_sample") {
-  deps = [ ":_copy_js_server" ]
+  public_deps = [ ":_copy_js_server" ]
 }

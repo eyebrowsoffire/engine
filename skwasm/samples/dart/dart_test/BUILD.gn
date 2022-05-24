@@ -11,9 +11,9 @@ dart2wasm("_skwasm_dart_test_wasm") {
 
 copy("_skwasm_dart_test_server") {
   sources = [
-    "$root_out_dir/skwasm.js",
-    "$root_out_dir/skwasm.wasm",
-    "$root_out_dir/skwasm.worker.js",
+    "$root_out_dir/skwasm/skwasm.js",
+    "$root_out_dir/skwasm/skwasm.wasm",
+    "$root_out_dir/skwasm/skwasm.worker.js",
     "$root_out_dir/skwasm_dart_test.wasm",
     "dart_imports.js",
     "index.html",
@@ -21,7 +21,7 @@ copy("_skwasm_dart_test_server") {
   outputs = [ "$target_out_dir/{{source_file_part}}" ]
   public_deps = [
     ":_skwasm_dart_test_wasm",
-    "//flutter/skwasm/wasm:skwasm",
+    "//flutter/skwasm:skwasm",
   ]
 }
 

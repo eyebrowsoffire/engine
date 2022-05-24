@@ -75,7 +75,10 @@ group("flutter") {
   } else {
     public_deps = [
       ":dart_sdk",
-      "//flutter/web_sdk",
+
+      # "//flutter/web_sdk",
+      "//flutter/skwasm",
+      "//flutter/skwasm/samples",
     ]
   }
 
