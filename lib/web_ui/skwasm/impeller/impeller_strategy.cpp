@@ -40,6 +40,41 @@ class ReactorWorker : public impeller::ReactorGLES::Worker {
   }
 };
 
+class ImpellerParagraphPainter : public skia::textlayout::ParagraphPainter {
+public:
+  ImpellerParagraphPainter(flutter::DisplayListBuilder& builder) : _builder(builder) {}
+  virtual void drawTextBlob(const sk_sp<SkTextBlob>& blob, SkScalar x, SkScalar y, const SkPaintOrID& paint) {
+    _builder.DrawTextBlob(blob, x, y, flutter::DlPaint());
+  }
+
+  virtual void drawTextShadow(const sk_sp<SkTextBlob>& blob, SkScalar x, SkScalar y, SkColor color, SkScalar blurSigma) {
+  }
+  virtual void drawRect(const SkRect& rect, const SkPaintOrID& paint) {
+  }
+  virtual void drawFilledRect(const SkRect& rect, const DecorationStyle& decorStyle) {
+  }
+  virtual void drawPath(const SkPath& path, const DecorationStyle& decorStyle) {
+  }
+  virtual void drawLine(SkScalar x0, SkScalar y0, SkScalar x1, SkScalar y1, const DecorationStyle& decorStyle) {
+  }
+  virtual void clipRect(const SkRect& rect) {
+  }
+  virtual void translate(SkScalar dx, SkScalar dy) {
+  }
+
+  virtual void save() {
+  }
+  virtual void restore() {
+  }
+private:
+  flutter::DisplayListBuilder& _builder;
+};
+
+void Canvas::drawParagraph(Paragraph *paragraph, Scalar x, Scalar y) {
+  ImpellerParagraphPainter painter(_builder);
+  paragraph->paint(&painter, x, y);
+}
+
 sk_sp<GraphicsContext> createGraphicsContext() {
   auto clearDepthEmulated = [](float depth) {};
   auto depthRangeEmulated = [](float nearVal, float farVal) {};

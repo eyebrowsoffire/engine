@@ -222,6 +222,8 @@ class Canvas {
     _builder.DrawPath(path, paint);
   }
 
+  void drawParagraph(Paragraph *paragraph, Scalar x, Scalar y);
+
   void drawPicture(const Picture* picture) {
     _builder.DrawDisplayList(sk_ref_sp(picture));
   }
@@ -315,10 +317,10 @@ static inline void drawShadowOnCanvas(Canvas* canvas,
 }
 
 static inline void drawParagraphOnCanvas(Canvas* canvas,
-                                         Paragraph* paragraph,
-                                         Scalar x,
-                                         Scalar y) {
-  // TODO: Draw paragraphs.
+                           Paragraph* paragraph,
+                           Scalar x,
+                           Scalar y) {
+  canvas->drawParagraph(paragraph, x, y);
 }
 
 class PictureRecorder : public SkRefCnt {

@@ -34,8 +34,6 @@ source_set("fml") {
     "hash_combine.h",
     "hex_codec.cc",
     "hex_codec.h",
-    "icu_util.cc",
-    "icu_util.h",
     "log_level.h",
     "log_settings.cc",
     "log_settings.h",
@@ -116,13 +114,19 @@ source_set("fml") {
     ":string_conversion",
   ]
 
-  deps = [
-    # These need to be in sync with the Fuchsia buildroot.
-    "//flutter/third_party/icu",
-  ]
-
+  deps = []
   if (target_os != "wasm") {
-    deps += [ "$dart_src/runtime:dart_api" ]
+    deps += [
+      # These need to be in sync with the Fuchsia buildroot.
+      "//flutter/third_party/icu",
+
+      "$dart_src/runtime:dart_api" 
+    ]
+
+    sources += [
+      "icu_util.cc",
+      "icu_util.h",
+    ]
   }
 
   if (enable_backtrace) {
@@ -130,7 +134,9 @@ source_set("fml") {
     deps += [ "//flutter/third_party/abseil-cpp/absl/debugging:symbolize" ]
   }
 
-  configs += [ "//flutter/third_party/icu:icu_config" ]
+  if (target_os != "wasm") {
+    configs += [ "//flutter/third_party/icu:icu_config" ]
+  }
 
   public_configs = [
     "//flutter:config",
