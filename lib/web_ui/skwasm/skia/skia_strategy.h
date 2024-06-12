@@ -40,6 +40,7 @@
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLMakeWebGLInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
@@ -163,7 +164,7 @@ inline void drawPictureToSurface(Picture* picture,
 }
 
 inline sk_sp<GraphicsContext> createGraphicsContext() {
-  return GrDirectContexts::MakeGL(GrGLMakeNativeInterface());
+  return GrDirectContexts::MakeGL(GrGLInterfaces::MakeWebGL());
 }
 
 inline void resetGraphicsContext(const sk_sp<GraphicsContext>& context) {
