@@ -4,6 +4,8 @@
 
 #include "impeller_strategy.h"
 
+#include "flutter/impeller/typographer/backends/skia/text_frame_skia.h"
+#include "flutter/impeller/typographer/backends/skia/typographer_context_skia.h"
 #include "impeller/aiks/aiks_context.h"
 #include "impeller/aiks/picture.h"
 #include "impeller/display_list/dl_dispatcher.h"
@@ -26,10 +28,7 @@ ShaderLibraryMappingsForApplication() {
 namespace Skwasm {
 class ReactorWorker : public impeller::ReactorGLES::Worker {
  public:
-  ReactorWorker() { emscripten_console_log("hi worker\n"); }
-
-  ~ReactorWorker() override { emscripten_console_log("bye worker\n"); }
-
+  ReactorWorker() = default;
   ReactorWorker(const ReactorWorker&) = delete;
 
   ReactorWorker& operator=(const ReactorWorker&) = delete;
@@ -41,36 +40,43 @@ class ReactorWorker : public impeller::ReactorGLES::Worker {
 };
 
 class ImpellerParagraphPainter : public skia::textlayout::ParagraphPainter {
-public:
-  ImpellerParagraphPainter(flutter::DisplayListBuilder& builder) : _builder(builder) {}
-  virtual void drawTextBlob(const sk_sp<SkTextBlob>& blob, SkScalar x, SkScalar y, const SkPaintOrID& paint) {
-    _builder.DrawTextBlob(blob, x, y, flutter::DlPaint());
+ public:
+  ImpellerParagraphPainter(flutter::DisplayListBuilder& builder)
+      : _builder(builder) {}
+  virtual void drawTextBlob(const sk_sp<SkTextBlob>& blob,
+                            SkScalar x,
+                            SkScalar y,
+                            const SkPaintOrID& paint) {
+    _builder.DrawTextFrame(impeller::MakeTextFrameFromTextBlobSkia(blob), x, y,
+                           flutter::DlPaint());
   }
 
-  virtual void drawTextShadow(const sk_sp<SkTextBlob>& blob, SkScalar x, SkScalar y, SkColor color, SkScalar blurSigma) {
-  }
-  virtual void drawRect(const SkRect& rect, const SkPaintOrID& paint) {
-  }
-  virtual void drawFilledRect(const SkRect& rect, const DecorationStyle& decorStyle) {
-  }
+  virtual void drawTextShadow(const sk_sp<SkTextBlob>& blob,
+                              SkScalar x,
+                              SkScalar y,
+                              SkColor color,
+                              SkScalar blurSigma) {}
+  virtual void drawRect(const SkRect& rect, const SkPaintOrID& paint) {}
+  virtual void drawFilledRect(const SkRect& rect,
+                              const DecorationStyle& decorStyle) {}
   virtual void drawPath(const SkPath& path, const DecorationStyle& decorStyle) {
   }
-  virtual void drawLine(SkScalar x0, SkScalar y0, SkScalar x1, SkScalar y1, const DecorationStyle& decorStyle) {
-  }
-  virtual void clipRect(const SkRect& rect) {
-  }
-  virtual void translate(SkScalar dx, SkScalar dy) {
-  }
+  virtual void drawLine(SkScalar x0,
+                        SkScalar y0,
+                        SkScalar x1,
+                        SkScalar y1,
+                        const DecorationStyle& decorStyle) {}
+  virtual void clipRect(const SkRect& rect) {}
+  virtual void translate(SkScalar dx, SkScalar dy) {}
 
-  virtual void save() {
-  }
-  virtual void restore() {
-  }
-private:
+  virtual void save() {}
+  virtual void restore() {}
+
+ private:
   flutter::DisplayListBuilder& _builder;
 };
 
-void Canvas::drawParagraph(Paragraph *paragraph, Scalar x, Scalar y) {
+void Canvas::drawParagraph(Paragraph* paragraph, Scalar x, Scalar y) {
   ImpellerParagraphPainter painter(_builder);
   paragraph->paint(&painter, x, y);
 }
@@ -136,9 +142,7 @@ GraphicsContext::GraphicsContext(std::shared_ptr<impeller::ContextGLES> context,
                                  std::shared_ptr<ReactorWorker> worker)
     : _context(std::move(context)),
       _renderer(std::move(renderer)),
-      _worker(std::move(worker)) {
-  emscripten_console_log("RETAINING worker\n");
-}
+      _worker(std::move(worker)) {}
 
 sk_sp<GraphicsSurface> GraphicsContext::createSurface(int width, int height) {
   return sk_make_sp<GraphicsSurface>(_context, _renderer, width, height);
@@ -151,12 +155,12 @@ GraphicsSurface::GraphicsSurface(std::shared_ptr<impeller::ContextGLES> context,
     : _context(std::move(context)),
       _renderer(std::move(renderer)),
       _width(width),
-      _height(height) {}
+      _height(height),
+      _typographerContext(impeller::TypographerContextSkia::Make()) {}
 
 GraphicsSurface::~GraphicsSurface() = default;
 
 void GraphicsSurface::renderPicture(const impeller::Picture& picture) {
-  emscripten_console_log("inside render picture\n");
   auto surface = impeller::SurfaceGLES::WrapFBO(
       _context,                                  // context
       []() { return true; },                     // swap callback
@@ -164,26 +168,18 @@ void GraphicsSurface::renderPicture(const impeller::Picture& picture) {
       impeller::PixelFormat::kR8G8B8A8UNormInt,  // pixel format
       {_width, _height}                          // surface size
   );
-  emscripten_console_log(surface->IsValid() ? "valid surface\n"
-                                            : "invalid surface\n");
   bool result = _renderer->Render(
       std::move(surface), [this, &picture](impeller::RenderTarget& target) {
-        emscripten_console_log("inside render callback\n");
-        impeller::AiksContext context(_context, nullptr);
-        emscripten_console_log("inside render callback\n");
+        impeller::AiksContext context(_context, _typographerContext);
         bool result = context.Render(picture, target, true);
-        emscripten_console_log(result ? "rendered true\n" : "rendered false\n");
         return result;
       });
-  emscripten_console_log(result ? "after render: true\n"
-                                : "after render: false");
 }
 
 void drawPictureToSurface(Picture* picture,
                           GraphicsSurface* surface,
                           Scalar offsetX,
                           Scalar offsetY) {
-  emscripten_console_log("inside draaw picture\n");
   impeller::DlDispatcher dispatcher;
   picture->Dispatch(dispatcher);
   auto impellerPicture = dispatcher.EndRecordingAsPicture();

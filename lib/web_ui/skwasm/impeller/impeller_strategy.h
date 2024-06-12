@@ -52,6 +52,7 @@ class ContextGLES;
 class Surface;
 class Picture;
 class Renderer;
+class TypographerContext;
 }  // namespace impeller
 
 namespace Skwasm {
@@ -222,7 +223,7 @@ class Canvas {
     _builder.DrawPath(path, paint);
   }
 
-  void drawParagraph(Paragraph *paragraph, Scalar x, Scalar y);
+  void drawParagraph(Paragraph* paragraph, Scalar x, Scalar y);
 
   void drawPicture(const Picture* picture) {
     _builder.DrawDisplayList(sk_ref_sp(picture));
@@ -317,9 +318,9 @@ static inline void drawShadowOnCanvas(Canvas* canvas,
 }
 
 static inline void drawParagraphOnCanvas(Canvas* canvas,
-                           Paragraph* paragraph,
-                           Scalar x,
-                           Scalar y) {
+                                         Paragraph* paragraph,
+                                         Scalar x,
+                                         Scalar y) {
   canvas->drawParagraph(paragraph, x, y);
 }
 
@@ -375,6 +376,7 @@ class GraphicsSurface : public SkRefCnt {
  private:
   std::shared_ptr<impeller::ContextGLES> _context;
   std::shared_ptr<impeller::Renderer> _renderer;
+  std::shared_ptr<impeller::TypographerContext> _typographerContext;
   int _width;
   int _height;
 };

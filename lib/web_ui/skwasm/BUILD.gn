@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/toolchain/wasm.gni")
+import("//flutter/impeller/tools/args.gni")
 
 template("skwasm_library") {
   wasm_lib(target_name) {
@@ -109,5 +110,6 @@ skwasm_library("skwasm") {
 }
 
 skwasm_library("wimp") {
+  print("impeller_debug: ${impeller_debug}")
   use_impeller = true
 }

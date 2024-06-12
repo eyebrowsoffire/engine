@@ -149,7 +149,6 @@ void Surface::renderPicturesOnWorker(sk_sp<Picture>* pictures,
     pictureRect.roundOut(&roundedOutRect);
     _resizeCanvasToFit(roundedOutRect.width(), roundedOutRect.height());
     makeCurrent(_glContext);
-    emscripten_console_log("rendering picture\n");
     drawPictureToSurface(picture.get(), _surface.get(), -roundedOutRect.fLeft,
                          -roundedOutRect.fTop);
     _grContext->flush(_surface.get());

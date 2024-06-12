@@ -767,6 +767,7 @@ def to_gn_args(args):
 # When building for WASM, almost all GN args used in the Flutter SDK
 # build are unused. This method is used instead.
 def to_gn_wasm_args(args, gn_args):
+  gn_args['flutter_runtime_mode'] = args.runtime_mode
   gn_args['is_official_build'] = True
   gn_args['is_component_build'] = False
   gn_args['use_clang_static_analyzer'] = False

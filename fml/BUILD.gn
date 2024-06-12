@@ -118,9 +118,8 @@ source_set("fml") {
   if (target_os != "wasm") {
     deps += [
       # These need to be in sync with the Fuchsia buildroot.
+      "$dart_src/runtime:dart_api",
       "//flutter/third_party/icu",
-
-      "$dart_src/runtime:dart_api" 
     ]
 
     sources += [
